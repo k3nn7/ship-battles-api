@@ -12,7 +12,7 @@ class TestRootRequest(unittest.TestCase):
 
     def test_contains_valid_text(self):
         response = self._do_request_to_root_url()
-        self.assertIn("ShipBattles API", response.get_data())
+        self.assertIn('ShipBattles API', response.get_data().decode('utf-8'))
 
     def _do_request_to_root_url(self):
         return self.app.get('/api/v1/')
