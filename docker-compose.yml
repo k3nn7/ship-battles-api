@@ -1,0 +1,8 @@
+shipbattles:
+  build: .
+  volumes:
+    - .:/home
+  links:
+    - mongodb
+mongodb:
+  image: mongo
