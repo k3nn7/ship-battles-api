@@ -1,23 +1,11 @@
 import unittest
-import webapp
 import json
-from shipbattles import service
-from repository import memory
+import tests.webapp.test_client
 
 
-class TestAccountRequests(unittest.TestCase):
+class TestCreateAccount(unittest.TestCase):
     def setUp(self):
-        self.app = webapp.app.test_client()
-        account_repository = memory.CrudRepository()
-        session_token_repository = memory.CrudRepository()
-        webapp.app.debug = True
-        webapp.app.account_service = service.AccountService(
-            account_repository
-        )
-        webapp.app.security_service = service.SecurityService(
-            account_repository,
-            session_token_repository
-        )
+        self.app = tests.webapp.test_client.build()
 
     def test_returns_201(self):
         response = self._do_request_to_account_create()
