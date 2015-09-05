@@ -8,9 +8,15 @@ from repository import memory
 class TestAccountRequests(unittest.TestCase):
     def setUp(self):
         self.app = webapp.app.test_client()
+        account_repository = memory.CrudRepository()
+        session_token_repository = memory.CrudRepository()
         webapp.app.debug = True
         webapp.app.account_service = service.AccountService(
-            memory.CrudRepository()
+            account_repository
+        )
+        webapp.app.security_service = service.SecurityService(
+            account_repository,
+            session_token_repository
         )
 
     def test_returns_201(self):

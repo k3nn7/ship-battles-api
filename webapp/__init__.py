@@ -13,7 +13,10 @@ def api_root():
 
 @app.route('/api/v1/account', methods=['POST'])
 def account_create():
-    new_account = app.account_service.create_random_account()
-    response = Response(serializer.account_serialize(new_account), status=201)
-    response.headers['X-AuthToken'] = 'foobar'
+    account = app.account_service.create_random_account()
+    session_token = (app
+                     .security_service
+                     .generate_auth_token_without_password(account.id))
+    response = Response(serializer.account_serialize(account), status=201)
+    response.headers['X-AuthToken'] = session_token
     return response
