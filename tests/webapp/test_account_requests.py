@@ -10,7 +10,7 @@ class TestAccountRequests(unittest.TestCase):
         self.app = webapp.app.test_client()
         webapp.app.debug = True
         webapp.app.account_service = service.AccountService(
-            memory.AccountRepository()
+            memory.CrudRepository()
         )
 
     def test_returns_201(self):

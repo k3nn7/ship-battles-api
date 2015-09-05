@@ -1,12 +1,12 @@
 import unittest
 from shipbattles.service import AccountService
 from shipbattles.entity import Account
-from repository.memory import AccountRepository
+from repository.memory import CrudRepository
 
 
 class TestAccountService(unittest.TestCase):
     def setUp(self):
-        self.account_repository = AccountRepository()
+        self.account_repository = CrudRepository()
         self.account_service = AccountService(self.account_repository)
 
     def test_create_account(self):
