@@ -1,5 +1,6 @@
 from flask import Flask
 from flask import Response
+from webapp import serializer
 
 
 app = Flask(__name__)
@@ -12,6 +13,7 @@ def api_root():
 
 @app.route('/api/v1/account', methods=['POST'])
 def account_create():
-    response = Response('{"nick":"testuser","id":"foo123"}', status=201)
+    new_account = app.account_service.create_random_account()
+    response = Response(serializer.account_serialize(new_account), status=201)
     response.headers['X-AuthToken'] = 'foobar'
     return response
