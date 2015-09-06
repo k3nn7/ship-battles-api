@@ -1,14 +1,15 @@
 import unittest
 from shipbattles.service import SecurityService, SecuredAccountError
 from shipbattles.service import AccountNotExistsError
-from repository.memory import CrudRepository
+from shipbattles.service import InvalidCredentialsError
+from repository.memory import CrudRepository, SessionTokenRepository
 from shipbattles.entity import Account
 
 
 class TestSecurityService(unittest.TestCase):
     def setUp(self):
         self.account_repository = CrudRepository()
-        self.session_token_repository = CrudRepository()
+        self.session_token_repository = SessionTokenRepository()
         self.security_service = SecurityService(
             self.account_repository,
             self.session_token_repository
@@ -45,3 +46,17 @@ class TestSecurityService(unittest.TestCase):
         with self.assertRaises(AccountNotExistsError):
             (self.security_service
                  .generate_auth_token_without_password('foo'))
+
+    def test_authenticate_by_hash(self):
+        account = Account('foo')
+        account = self.account_repository.save(account)
+        auth_token = (self.security_service
+                      .generate_auth_token_without_password(account.id))
+        session_token = (self.security_service
+                         .authenticate_by_hash(auth_token.hash))
+        self.assertEqual(account.id, session_token.account_id)
+
+    def test_authenticate_by_invalid_hash(self):
+        with self.assertRaises(InvalidCredentialsError):
+            (self.security_service
+             .authenticate_by_hash('foobar'))

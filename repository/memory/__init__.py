@@ -17,3 +17,11 @@ class CrudRepository:
             return self.data[item_id]
         except KeyError as e:
             raise EntityNotFoundError(e)
+
+
+class SessionTokenRepository(CrudRepository):
+    def find_by_hash(self, hash):
+        for item in self.data.values():
+            if item.hash == hash:
+                return item
+        raise EntityNotFoundError()

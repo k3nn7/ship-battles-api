@@ -25,6 +25,12 @@ class SecurityService:
         except EntityNotFoundError as e:
             raise AccountNotExistsError(e)
 
+    def authenticate_by_hash(self, hash):
+        try:
+            return self.session_token_repository.find_by_hash(hash)
+        except EntityNotFoundError as e:
+            raise InvalidCredentialsError(e)
+
     def _get_account_by_id(self, account_id):
         account = self.account_repository.find_by_id(account_id)
         if account.is_secured():
@@ -41,4 +47,8 @@ class EntityNotFoundError(Exception):
 
 
 class AccountNotExistsError(Exception):
+    pass
+
+
+class InvalidCredentialsError(Exception):
     pass
