@@ -22,7 +22,8 @@ class TestGetAuthenticatedAccount(unittest.TestCase):
         self.assertIsNotNone(response_body['nick'])
 
     def _do_request(self):
+        response = self.app.post('/api/v1/account')
         return self.app.get(
             '/api/v1/account',
-            headers={'X-AuthToken': 'foobar'}
+            headers={'X-AuthToken': response.headers['X-AuthToken']}
         )

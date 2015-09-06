@@ -1,6 +1,7 @@
 from flask import Flask
 from flask import request, Response
 from webapp import serializer
+from shipbattles.service import InvalidCredentialsError
 
 
 app = Flask(__name__)
@@ -13,14 +14,8 @@ def api_root():
 
 @app.route('/api/v1/account', methods=['GET'])
 def get_authenticated_account():
-    if 'X-AuthToken' in request.headers:
-        auth_token = request.headers['X-AuthToken']
-        if auth_token == 'foobar':
-            response = Response('{"id":"a","nick":"b"}', status=200)
-        else:
-            response = Response('', status=401)
-    else:
-        response = Response('', status=401)
+    authenticate_by_hash(request)
+    response = Response('{"id":"a","nick":"b"}')
     return response
 
 
@@ -31,5 +26,26 @@ def account_create():
                      .security_service
                      .generate_auth_token_without_password(account.id))
     response = Response(serializer.account_serialize(account), status=201)
-    response.headers['X-AuthToken'] = session_token
+    response.headers['X-AuthToken'] = session_token.hash
     return response
+
+
+class UnauthorizedError(Exception):
+    status_code = 401
+
+
+@app.errorhandler(UnauthorizedError)
+def handle_unauthorized_error(error):
+    response = Response('', status=error.status_code)
+    return response
+
+
+def authenticate_by_hash(request):
+    if 'X-AuthToken' not in request.headers:
+        raise UnauthorizedError()
+    try:
+        return (app
+                .security_service
+                .authenticate_by_hash(request.headers['X-AuthToken']))
+    except InvalidCredentialsError as e:
+        raise UnauthorizedError(e)
