@@ -1,25 +1,20 @@
-# from pymongo import MongoClient
-#
-#
-# print("connecting...")
-#
-# client = MongoClient("mongodb://mongodb:27017")
-# db = client.shipbattles
-#
-# result = db.users.insert_one({
-#     "nick": "k3nn7",
-#     "email": "lukasz.lalik@gmail.com"
-# })
-#
-# print(result)
+from pymongo import MongoClient
 import webapp
 from shipbattles import service
-from repository import memory
+from repository import mongo
+from repository.mongo import serializer
 
 
 def main():
-    account_repository = memory.CrudRepository()
-    session_token_repository = memory.SessionTokenRepository()
+    client = MongoClient("mongodb://mongodb:27017")
+    db = client.shipbattles
+
+    account_repository = mongo.CrudRepository(
+        db.accounts, serializer.AccountSerializer())
+
+    session_token_repository = mongo.SessionTokenRepository(
+        db.session_tokens, serializer.SessionTokenSerializer())
+
     webapp.app.debug = True
     webapp.app.account_service = service.AccountService(
         account_repository
