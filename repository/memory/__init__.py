@@ -1,4 +1,5 @@
 from shipbattles.service import EntityNotFoundError
+from shipbattles.entity import BattleState
 
 
 class CrudRepository:
@@ -25,3 +26,27 @@ class SessionTokenRepository(CrudRepository):
             if item.hash == hash:
                 return item
         raise EntityNotFoundError()
+
+
+class BattleRepository(CrudRepository):
+    def find_looking_for_opponent_battle(self, attacker_id):
+        for item in self.data.values():
+            if item.state == BattleState.looking_for_opponent:
+                return item
+        return None
+
+    def find_ongoing_battle_with_participant(self, account_id):
+        for battle in self.data.values():
+            participates = self._participates(account_id, battle)
+            in_progress = self._in_progress(battle)
+            if participates and in_progress:
+                return battle
+        return None
+
+    def _participates(self, account_id, battle):
+        return ((battle.attacker_id == account_id)
+                or (battle.defender_id == account_id))
+
+    def _in_progress(self, battle):
+        return ((battle.state == BattleState.looking_for_opponent)
+                or (battle.state == BattleState.deploy))

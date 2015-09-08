@@ -1,4 +1,4 @@
-from shipbattles.entity import Account, SessionToken
+from shipbattles.entity import Account, SessionToken, Battle, BattleState
 import time
 
 
@@ -38,6 +38,38 @@ class SecurityService:
         return account
 
 
+class BattleService:
+    def __init__(self, battle_repository):
+        self.battle_repository = battle_repository
+
+    def attack(self, attacker_id):
+        if self._is_in_battle(attacker_id):
+            raise AlreadyInBattleError()
+
+        battle = self.battle_repository.find_looking_for_opponent_battle(
+            attacker_id)
+        if battle is not None:
+            return self._join_battle(battle, attacker_id)
+        return self._start_battle(attacker_id)
+
+    def _is_in_battle(self, attacker_id):
+        battle = (self
+                  .battle_repository
+                  .find_ongoing_battle_with_participant(attacker_id))
+        return battle is not None
+
+    def _join_battle(self, battle, attacker_id):
+        battle.defender_id = attacker_id
+        battle.state = BattleState.deploy
+        return battle
+
+    def _start_battle(self, attacker_id):
+        battle = Battle()
+        battle.state = BattleState.looking_for_opponent
+        battle.attacker_id = attacker_id
+        return battle
+
+
 class SecuredAccountError(Exception):
     pass
 
@@ -51,4 +83,8 @@ class AccountNotExistsError(Exception):
 
 
 class InvalidCredentialsError(Exception):
+    pass
+
+
+class AlreadyInBattleError(Exception):
     pass

@@ -1,5 +1,6 @@
 import hashlib
 import time
+from enum import Enum
 
 
 class Account:
@@ -25,3 +26,15 @@ class SessionToken:
     def _generate_hash(self):
         random_string = '%s' % time.time()
         return hashlib.md5(random_string.encode()).hexdigest()
+
+
+class Battle:
+    id = None
+    state = None
+    attacker_id = None
+    defender_id = None
+
+
+class BattleState(Enum):
+    looking_for_opponent = 1
+    deploy = 2
