@@ -30,6 +30,14 @@ def account_create():
     return response
 
 
+@app.route('/api/v1/battle', methods=['POST'])
+def battle_create():
+    session = authenticate_by_hash(request)
+    battle = app.battle_service.attack(session.account_id)
+    response = Response(serializer.battle_serialize(battle), status=201)
+    return response
+
+
 class UnauthorizedError(Exception):
     status_code = 401
 
