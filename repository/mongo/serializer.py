@@ -4,6 +4,7 @@ from shipbattles import entity
 class AccountSerializer:
     def serialize(self, account):
         return {
+            '_id': account.id,
             'password_digest': account.password_digest,
             'nick': account.nick
         }
@@ -18,6 +19,7 @@ class AccountSerializer:
 class SessionTokenSerializer:
     def serialize(self, session_token):
         return {
+            '_id': session_token.id,
             'account_id': session_token.account_id,
             'hash': session_token.hash
         }
@@ -27,3 +29,21 @@ class SessionTokenSerializer:
         session_token.hash = data['hash']
         session_token.id = data['_id']
         return session_token
+
+
+class BattleSerializer:
+    def serialize(self, battle):
+        return {
+            '_id': battle.id,
+            'state': int(battle.state.value),
+            'attacker_id': battle.attacker_id,
+            'defender_id': battle.defender_id
+        }
+
+    def deserialize(self, data):
+        battle = entity.Battle()
+        battle.id = data['_id']
+        battle.state = entity.BattleState(data['state'])
+        battle.attacker_id = data['attacker_id']
+        battle.defender_id = data['defender_id']
+        return battle
