@@ -44,6 +44,14 @@ class BattleRepository(CrudRepository):
                 count += 1
         return count
 
+    def find_ongoing_battle_with_participant(self, account_id):
+        for battle in self.data.values():
+            participates = self._participates(account_id, battle)
+            in_progress = self._in_progress(battle)
+            if participates and in_progress:
+                return battle
+        return None
+
     def _participates(self, account_id, battle):
         return ((battle.attacker_id == account_id)
                 or (battle.defender_id == account_id))

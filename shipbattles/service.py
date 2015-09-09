@@ -52,6 +52,11 @@ class BattleService:
             return self._join_battle(battle, attacker_id)
         return self._start_battle(attacker_id)
 
+    def get_current_battle(self, account_id):
+        return (self
+                .battle_repository
+                .find_ongoing_battle_with_participant(account_id))
+
     def _is_in_battle(self, attacker_id):
         battles = (self
                    .battle_repository

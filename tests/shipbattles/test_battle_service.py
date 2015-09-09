@@ -38,6 +38,12 @@ class TestBattleService(unittest.TestCase):
         with self.assertRaises(AlreadyInBattleError):
             self.battle_service.attack(attacker_id)
 
+    def test_get_current_battle(self):
+        account_id = 8
+        battle = self.battle_service.attack(account_id)
+        current_battle = self.battle_service.get_current_battle(account_id)
+        self.assertEqual(battle, current_battle)
+
     def _looking_for_opponent_battle(self):
         battle = Battle()
         battle.state = BattleState.looking_for_opponent
