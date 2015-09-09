@@ -12,6 +12,6 @@ def battle_serialize(battle):
     return json.dumps({
         'id': str(battle.id),
         'state': battle.state.value,
-        'attacker_id': battle.attacker_id,
-        'defender_id': battle.defender_id
+        'attacker_id': str(battle.attacker_id),
+        'defender_id': str(battle.defender_id)
     })

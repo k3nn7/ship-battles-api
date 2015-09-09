@@ -15,6 +15,10 @@ def main():
     session_token_repository = mongo.SessionTokenRepository(
         db.session_tokens, serializer.SessionTokenSerializer())
 
+    battle_repository = mongo.BattleRepository(
+        db.battles, serializer.BattleSerializer()
+    )
+
     webapp.app.debug = True
     webapp.app.account_service = service.AccountService(
         account_repository
@@ -22,6 +26,9 @@ def main():
     webapp.app.security_service = service.SecurityService(
         account_repository,
         session_token_repository
+    )
+    webapp.app.battle_service = service.BattleService(
+        battle_repository
     )
     webapp.app.run(host='0.0.0.0', port=8080)
 

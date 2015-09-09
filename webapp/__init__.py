@@ -1,7 +1,7 @@
 from flask import Flask
 from flask import request, Response
 from webapp import serializer
-from shipbattles.service import InvalidCredentialsError
+from shipbattles import service
 
 
 app = Flask(__name__)
@@ -33,16 +33,29 @@ def account_create():
 @app.route('/api/v1/battle', methods=['POST'])
 def battle_create():
     session = authenticate_by_hash(request)
-    battle = app.battle_service.attack(session.account_id)
+    try:
+        app.logger.error(session)
+        battle = app.battle_service.attack(session.account_id)
+    except service.AlreadyInBattleError:
+        raise BadRequestError()
+
     response = Response(serializer.battle_serialize(battle), status=201)
     return response
 
 
-class UnauthorizedError(Exception):
+class ApiError(Exception):
+    status_code = 500
+
+
+class UnauthorizedError(ApiError):
     status_code = 401
 
 
-@app.errorhandler(UnauthorizedError)
+class BadRequestError(ApiError):
+    status_code = 400
+
+
+@app.errorhandler(ApiError)
 def handle_unauthorized_error(error):
     response = Response('', status=error.status_code)
     return response
@@ -55,5 +68,5 @@ def authenticate_by_hash(request):
         return (app
                 .security_service
                 .authenticate_by_hash(request.headers['X-AuthToken']))
-    except InvalidCredentialsError as e:
+    except service.InvalidCredentialsError as e:
         raise UnauthorizedError(e)
