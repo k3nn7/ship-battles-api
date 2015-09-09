@@ -26,8 +26,15 @@ class TestBattleService(unittest.TestCase):
         self.assertEqual(attacker_id, battle.defender_id)
 
     def test_can_not_be_in_two_battles(self):
-        attacker_id = 8
+        attacker_id = 3
         self.battle_repository.save(self._looking_for_opponent_battle())
+        self.battle_service.attack(attacker_id)
+        with self.assertRaises(AlreadyInBattleError):
+            self.battle_service.attack(attacker_id)
+
+    def test_can_not_look_for_another_battle_if_already_looking(self):
+        attacker_id = 8
+        self.battle_service.attack(attacker_id)
         with self.assertRaises(AlreadyInBattleError):
             self.battle_service.attack(attacker_id)
 

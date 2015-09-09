@@ -53,21 +53,21 @@ class BattleService:
         return self._start_battle(attacker_id)
 
     def _is_in_battle(self, attacker_id):
-        battle = (self
-                  .battle_repository
-                  .find_ongoing_battle_with_participant(attacker_id))
-        return battle is not None
+        battles = (self
+                   .battle_repository
+                   .find_ongoing_battle_with_participant_count(attacker_id))
+        return battles > 0
 
     def _join_battle(self, battle, attacker_id):
         battle.defender_id = attacker_id
         battle.state = BattleState.deploy
-        return battle
+        return self.battle_repository.save(battle)
 
     def _start_battle(self, attacker_id):
         battle = Battle()
         battle.state = BattleState.looking_for_opponent
         battle.attacker_id = attacker_id
-        return battle
+        return self.battle_repository.save(battle)
 
 
 class SecuredAccountError(Exception):
