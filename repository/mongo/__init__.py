@@ -63,3 +63,21 @@ class BattleRepository(CrudRepository):
             ]
         }
         return self.collection.find(query).count()
+
+    def find_ongoing_battle_with_participant(self, account_id):
+        query = {
+            '$and': [
+                {'$or': [
+                    {'attacker_id': account_id},
+                    {'defender_id': account_id}
+                ]},
+                {'$or': [
+                    {'state': BattleState.looking_for_opponent.value},
+                    {'state': BattleState.deploy.value}
+                ]}
+            ]
+        }
+        cursor = self.collection.find(query)
+        if cursor.count() == 0:
+            return None
+        return self.serializer_class.deserialize(cursor[0])
