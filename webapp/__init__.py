@@ -1,6 +1,7 @@
 from flask import Flask
 from flask import request, Response
 from webapp import serializer
+from webapp.serializer import collection, j
 from shipbattles import service
 
 
@@ -25,7 +26,10 @@ def account_create():
     session_token = (app
                      .security_service
                      .generate_auth_token_without_password(account.id))
-    response = Response(serializer.account_serialize(account), status=201)
+    response = Response(
+        j(serializer.account_serialize(account)),
+        status=201
+    )
     response.headers['X-AuthToken'] = session_token.hash
     return response
 
@@ -34,13 +38,29 @@ def account_create():
 def battle_create():
     session = authenticate_by_hash(request)
     try:
-        app.logger.error(session)
         battle = app.battle_service.attack(session.account_id)
     except service.AlreadyInBattleError:
         raise BadRequestError()
 
-    response = Response(serializer.battle_serialize(battle), status=201)
+    response = Response(
+        j(serializer.battle_serialize(battle)),
+        status=201
+    )
     return response
+
+
+@app.route('/api/v1/battles', methods=['GET'])
+def battle_get_current():
+    session = authenticate_by_hash(request)
+    current_battle = app.battle_service.get_current_battle(session.account_id)
+    if current_battle is None:
+        current_battle = []
+    else:
+        current_battle = [current_battle]
+    return Response(
+        j(collection(current_battle, serializer.battle_serialize)),
+        status=200
+    )
 
 
 class ApiError(Exception):
