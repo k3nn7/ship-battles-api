@@ -19,6 +19,10 @@ class Account:
     def password_valid(self, password):
         return self.password_digest == self._secure_password(password)
 
+    def set_nickname(self, nickname):
+        self._validate_nickname(nickname)
+        self.nick = nickname
+
     def _secure_password(self, password):
         # @TODO add hashing and salting
         return password
@@ -33,6 +37,18 @@ class Account:
         if len(password) < 3:
             return False
         return True
+
+    def _validate_nickname(self, nickname):
+        if not self._is_nickname_valid(nickname):
+            raise InvalidNicknameError()
+
+    def _is_nickname_valid(self, nickname):
+        if nickname in [None, True, False]:
+            return False
+        if len(nickname) < 3:
+            return False
+        return True
+
 
 class SessionToken:
     def __init__(self, account_id):
@@ -58,4 +74,8 @@ class BattleState(Enum):
 
 
 class InvalidPasswordError(Exception):
+    pass
+
+
+class InvalidNicknameError(Exception):
     pass

@@ -1,5 +1,5 @@
 from shipbattles.entity import Account, SessionToken, Battle, BattleState
-from shipbattles.entity import InvalidPasswordError
+from shipbattles.entity import InvalidPasswordError, InvalidNicknameError
 import time
 
 
@@ -21,10 +21,23 @@ class AccountService:
             raise ValidationError({'password': 'invalid'})
         self.account_repository.save(account)
 
+    def update_nickname(self, account_id, nickname):
+        if not self._is_nickname_available(nickname):
+            raise ValidationError({'nickname': 'invalid'})
+        account = self.account_repository.find_by_id(account_id)
+        try:
+            account.set_nickname(nickname)
+        except InvalidNicknameError:
+            raise ValidationError({'nickname': 'invalid'})
+        self.account_repository.save(account)
+
     def _validate_previous_password(self, account, previous_password):
         if account.is_secured():
             if not account.password_valid(previous_password):
                 raise ValidationError({'previous_password': 'invalid'})
+
+    def _is_nickname_available(self, nickname):
+        return self.account_repository.find_by_nickname(nickname) is None
 
 
 class SecurityService:
