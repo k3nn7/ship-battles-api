@@ -11,6 +11,17 @@ class AccountService:
         account = Account(nick)
         return self.account_repository.save(account)
 
+    def update_password(self, account_id, previous_password, new_password):
+        account = self.account_repository.find_by_id(account_id)
+        self._validate_previous_password(account, previous_password)
+        account.set_password(new_password)
+        self.account_repository.save(account)
+
+    def _validate_previous_password(self, account, previous_password):
+        if account.is_secured():
+            if not account.password_valid(previous_password):
+                raise ValidationError({'previous_password': 'invalid'})
+
 
 class SecurityService:
     def __init__(self, account_repository, session_token_repository):
@@ -92,4 +103,8 @@ class InvalidCredentialsError(Exception):
 
 
 class AlreadyInBattleError(Exception):
+    pass
+
+
+class ValidationError(Exception):
     pass

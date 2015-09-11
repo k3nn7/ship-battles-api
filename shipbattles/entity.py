@@ -13,8 +13,14 @@ class Account:
         return self.password_digest is not None
 
     def set_password(self, password):
+        self.password_digest = self._secure_password(password)
+
+    def password_valid(self, password):
+        return self.password_digest == self._secure_password(password)
+
+    def _secure_password(self, password):
         # @TODO add hashing and salting
-        self.password_digest = password
+        return password
 
 
 class SessionToken:
