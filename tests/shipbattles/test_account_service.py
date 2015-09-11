@@ -27,6 +27,13 @@ class TestAccountService(unittest.TestCase):
         with self.assertRaises(ValidationError):
             self.account_service.update_password(account.id, None, 'bar')
 
+    def test_update_account_password_for_invalid_passwords(self):
+        invalid_passwords = [None, False, True, '', 'a', 'af']
+        for password in invalid_passwords:
+            account = self.account_service.create_random_account()
+            with self.assertRaises(ValidationError):
+                self.account_service.update_password(account.id, None, password)
+
     def test_update_account_password_with_password(self):
         account = self.account_service.create_random_account()
         self.account_service.update_password(account.id, None, 'foo')

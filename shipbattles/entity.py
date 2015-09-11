@@ -13,6 +13,7 @@ class Account:
         return self.password_digest is not None
 
     def set_password(self, password):
+        self._validate_password(password)
         self.password_digest = self._secure_password(password)
 
     def password_valid(self, password):
@@ -22,6 +23,16 @@ class Account:
         # @TODO add hashing and salting
         return password
 
+    def _validate_password(self, password):
+        if not self._is_password_valid(password):
+            raise InvalidPasswordError()
+
+    def _is_password_valid(self, password):
+        if password in [None, True, False]:
+            return False
+        if len(password) < 3:
+            return False
+        return True
 
 class SessionToken:
     def __init__(self, account_id):
@@ -44,3 +55,7 @@ class Battle:
 class BattleState(Enum):
     looking_for_opponent = 1
     deploy = 2
+
+
+class InvalidPasswordError(Exception):
+    pass

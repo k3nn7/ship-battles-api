@@ -1,4 +1,5 @@
 from shipbattles.entity import Account, SessionToken, Battle, BattleState
+from shipbattles.entity import InvalidPasswordError
 import time
 
 
@@ -14,7 +15,10 @@ class AccountService:
     def update_password(self, account_id, previous_password, new_password):
         account = self.account_repository.find_by_id(account_id)
         self._validate_previous_password(account, previous_password)
-        account.set_password(new_password)
+        try:
+            account.set_password(new_password)
+        except InvalidPasswordError:
+            raise ValidationError({'password': 'invalid'})
         self.account_repository.save(account)
 
     def _validate_previous_password(self, account, previous_password):
