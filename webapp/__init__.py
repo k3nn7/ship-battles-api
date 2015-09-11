@@ -3,6 +3,7 @@ from flask import request, Response
 from webapp import serializer
 from webapp.serializer import collection, j
 from shipbattles import service
+import json
 
 
 app = Flask(__name__)
@@ -32,6 +33,15 @@ def account_create():
     )
     response.headers['X-AuthToken'] = session_token.hash
     return response
+
+
+@app.route('/api/v1/account', methods=['PUT'])
+def account_update_authenticated_account():
+    session = authenticate_by_hash(request)
+    request_body = json.loads(request.data.decode('utf-8'))
+    if 'new_password' not in request_body:
+        return Response(None, status=400)
+    return Response(None, status=204)
 
 
 @app.route('/api/v1/battle', methods=['POST'])
