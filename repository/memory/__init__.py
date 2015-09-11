@@ -20,6 +20,14 @@ class CrudRepository:
             raise EntityNotFoundError(e)
 
 
+class AccountRepository(CrudRepository):
+    def find_by_nickname(self, nickname):
+        for account in self.data.values():
+            if account.nick == nickname:
+                return account
+        return None
+
+
 class SessionTokenRepository(CrudRepository):
     def find_by_hash(self, hash):
         for item in self.data.values():

@@ -7,7 +7,7 @@ def build():
     app = webapp.app.test_client()
     webapp.app.debug = True
 
-    account_repository = memory.CrudRepository()
+    account_repository = memory.AccountRepository()
     session_token_repository = memory.SessionTokenRepository()
     battle_repository = memory.BattleRepository()
 
