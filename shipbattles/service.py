@@ -103,6 +103,14 @@ class BattleService:
         return self.battle_repository.save(battle)
 
 
+class ShipClassService:
+    def __init__(self, ship_class_repository):
+        self.ship_class_repository = ship_class_repository
+
+    def get_all(self):
+        return self.ship_class_repository.find_all()
+
+
 class SecuredAccountError(Exception):
     pass
 

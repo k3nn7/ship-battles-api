@@ -1,5 +1,5 @@
 from shipbattles.service import EntityNotFoundError
-from shipbattles.entity import BattleState
+from shipbattles.entity import BattleState, ShipClass
 
 
 class CrudRepository:
@@ -18,6 +18,9 @@ class CrudRepository:
             return self.data[item_id]
         except KeyError as e:
             raise EntityNotFoundError(e)
+
+    def find_all(self):
+        return self.data.values()
 
 
 class AccountRepository(CrudRepository):
@@ -67,3 +70,10 @@ class BattleRepository(CrudRepository):
     def _in_progress(self, battle):
         return ((battle.state == BattleState.looking_for_opponent)
                 or (battle.state == BattleState.deploy))
+
+
+class ShipClassRepository(CrudRepository):
+    def __init__(self):
+        self.data = {}
+        self.save(ShipClass('keel', 1))
+        self.save(ShipClass('destroyer', 2))

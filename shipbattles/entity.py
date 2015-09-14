@@ -73,6 +73,13 @@ class BattleState(Enum):
     deploy = 2
 
 
+class ShipClass:
+    def __init__(self, name, size):
+        self.id = None
+        self.name = name
+        self.size = size
+
+
 class InvalidPasswordError(Exception):
     pass
 
