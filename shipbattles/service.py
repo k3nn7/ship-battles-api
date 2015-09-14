@@ -97,7 +97,7 @@ class BattleService:
     def _join_battle(self, battle, attacker_id):
         battle.defender_id = attacker_id
         battle.state = BattleState.deploy
-        self.event_dispatcher.dispatch(event.Battle.deploy_finished, battle.id)
+        self.event_dispatcher.dispatch(event.Battle.deploy_finished, battle)
         return self.battle_repository.save(battle)
 
     def _start_battle(self, attacker_id):

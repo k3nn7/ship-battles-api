@@ -34,7 +34,7 @@ class TestBattleService(unittest.TestCase):
         self.assertEqual(attacker_id, battle.defender_id)
         (self.event_dispatcher
             .dispatch
-            .assert_called_with(event.Battle.deploy_finished, battle.id))
+            .assert_called_with(event.Battle.deploy_finished, battle))
 
     def test_can_not_be_in_two_battles(self):
         attacker_id = 3
