@@ -80,6 +80,13 @@ class ShipClass:
         self.size = size
 
 
+class Battlefield:
+    def __init__(self, battle_id, account_id):
+        self.id = None
+        self.battle_id = battle_id
+        self.account_id = account_id
+
+
 class InvalidPasswordError(Exception):
     pass
 

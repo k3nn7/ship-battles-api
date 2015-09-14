@@ -1,4 +1,5 @@
 from shipbattles.entity import Account, SessionToken, Battle, BattleState
+from shipbattles.entity import Battlefield
 from shipbattles.entity import InvalidPasswordError, InvalidNicknameError
 from shipbattles import event
 import time
@@ -112,6 +113,18 @@ class ShipClassService:
 
     def get_all(self):
         return self.ship_class_repository.find_all()
+
+
+class BattlefieldService:
+    def __init__(self, battlefield_repository):
+        self.battlefield_repository = battlefield_repository
+
+    def create_battlefields_for_battle(self, battle):
+        attacker_battlefield = self.battlefield_repository.save(
+            Battlefield(battle.id, battle.attacker_id))
+        defender_battlefield = self.battlefield_repository.save(
+            Battlefield(battle.id, battle.defender_id))
+        return [attacker_battlefield, defender_battlefield]
 
 
 class SecuredAccountError(Exception):
