@@ -17,6 +17,14 @@ def battle_serialize(battle):
     }
 
 
+def ship_class_serialize(ship_class):
+    return {
+        'id': ship_class.id,
+        'name': ship_class.name,
+        'size': ship_class.size
+    }
+
+
 def collection(collection, item_serialzer):
     return list(map(item_serialzer, collection))
 

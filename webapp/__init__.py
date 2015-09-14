@@ -102,6 +102,15 @@ def battle_get_current():
     )
 
 
+@app.route('/api/v1/ship_classes', methods=['GET'])
+def ship_classes_get():
+    ship_classes = app.ship_class_service.get_all()
+    return Response(
+        j(collection(ship_classes, serializer.ship_class_serialize)),
+        status=200
+    )
+
+
 class ApiError(Exception):
     status_code = 500
 

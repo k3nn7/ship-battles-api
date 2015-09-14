@@ -1,7 +1,7 @@
 from pymongo import MongoClient
 import webapp
 from shipbattles import service
-from repository import mongo
+from repository import mongo, memory
 from repository.mongo import serializer
 
 
@@ -19,6 +19,8 @@ def main():
         db.battles, serializer.BattleSerializer()
     )
 
+    ship_class_repository = memory.ShipClassRepository()
+
     webapp.app.debug = True
     webapp.app.account_service = service.AccountService(
         account_repository
@@ -29,6 +31,9 @@ def main():
     )
     webapp.app.battle_service = service.BattleService(
         battle_repository
+    )
+    webapp.app.ship_class_service = service.ShipClassService(
+        ship_class_repository
     )
     webapp.app.run(host='0.0.0.0', port=8080)
 
