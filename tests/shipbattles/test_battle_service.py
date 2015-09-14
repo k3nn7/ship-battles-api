@@ -1,21 +1,29 @@
 import unittest
+from unittest.mock import Mock
 from shipbattles.service import BattleService
 from shipbattles.service import AlreadyInBattleError
 from shipbattles.entity import BattleState, Battle
 from repository.memory import BattleRepository
+from shipbattles import event
 
 
 class TestBattleService(unittest.TestCase):
     def setUp(self):
         self.battle_repository = BattleRepository()
-        self.battle_service = BattleService(self.battle_repository)
+        self.event_dispatcher = Mock()
+        self.battle_service = BattleService(
+            self.battle_repository,
+            self.event_dispatcher
+        )
 
     def test_attack_and_wait_for_opponent(self):
         attacker_id = 3
+        self.event_dispatcher.dispatch = Mock()
         battle = self.battle_service.attack(attacker_id)
         self.assertEqual(BattleState.looking_for_opponent, battle.state)
         self.assertEqual(attacker_id, battle.attacker_id)
         self.assertIsNone(battle.defender_id)
+        assert not self.event_dispatcher.dispatch.called
 
     def test_start_battle_when_someone_is_looking_for_opponent(self):
         attacker_id = 3
@@ -24,6 +32,9 @@ class TestBattleService(unittest.TestCase):
         self.assertEqual(BattleState.deploy, battle.state)
         self.assertEqual(8, battle.attacker_id)
         self.assertEqual(attacker_id, battle.defender_id)
+        (self.event_dispatcher
+            .dispatch
+            .assert_called_with(event.Battle.deploy_finished, battle.id))
 
     def test_can_not_be_in_two_battles(self):
         attacker_id = 3

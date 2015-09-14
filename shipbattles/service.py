@@ -1,5 +1,6 @@
 from shipbattles.entity import Account, SessionToken, Battle, BattleState
 from shipbattles.entity import InvalidPasswordError, InvalidNicknameError
+from shipbattles import event
 import time
 
 
@@ -67,8 +68,9 @@ class SecurityService:
 
 
 class BattleService:
-    def __init__(self, battle_repository):
+    def __init__(self, battle_repository, event_dispatcher):
         self.battle_repository = battle_repository
+        self.event_dispatcher = event_dispatcher
 
     def attack(self, attacker_id):
         if self._is_in_battle(attacker_id):
@@ -94,6 +96,7 @@ class BattleService:
     def _join_battle(self, battle, attacker_id):
         battle.defender_id = attacker_id
         battle.state = BattleState.deploy
+        self.event_dispatcher.dispatch(event.Battle.deploy_finished, battle.id)
         return self.battle_repository.save(battle)
 
     def _start_battle(self, attacker_id):

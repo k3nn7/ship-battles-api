@@ -1,6 +1,2 @@
-class Events:
-    battle_began = 'battle_began'
-
-class BattleBegan:
-    def on_event(event):
-        pass
+class Battle:
+    deploy_finished = 'battle.deploy_finished'

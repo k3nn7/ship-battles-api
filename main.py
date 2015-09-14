@@ -1,5 +1,6 @@
 from pymongo import MongoClient
 import webapp
+import eventdispatcher
 from shipbattles import service
 from repository import mongo, memory
 from repository.mongo import serializer
@@ -8,6 +9,7 @@ from repository.mongo import serializer
 def main():
     client = MongoClient("mongodb://mongodb:27017")
     db = client.shipbattles
+    dispatcher = eventdispatcher.Dispatcher()
 
     account_repository = mongo.CrudRepository(
         db.accounts, serializer.AccountSerializer())
@@ -30,7 +32,8 @@ def main():
         session_token_repository
     )
     webapp.app.battle_service = service.BattleService(
-        battle_repository
+        battle_repository,
+        dispatcher
     )
     webapp.app.ship_class_service = service.ShipClassService(
         ship_class_repository
