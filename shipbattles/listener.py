@@ -1,6 +1,6 @@
 class BattleDeployFinishedListener:
-    def __init__(self, battle_service):
-        self.battle_service = battle_service
+    def __init__(self, battlefield_service):
+        self.battlefield_service = battlefield_service
 
     def on_event(self, battle):
-        pass
+        self.battlefield_service.create_battlefields_for_battle(battle)
