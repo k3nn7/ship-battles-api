@@ -93,11 +93,30 @@ def battle_get_current():
     session = authenticate_by_hash(request)
     current_battle = app.battle_service.get_current_battle(session.account_id)
     if current_battle is None:
-        current_battle = []
-    else:
-        current_battle = [current_battle]
+        return Response(None, status=404)
+
+    try:
+        my_battlefield = serializer.my_battlefield_serialize(
+            app.battlefield_service.get_my_battlefield(
+                current_battle, session.account_id)
+        )
+    except service.EntityNotFoundError:
+        my_battlefield = None
+
+    try:
+        opponent_battlefield = serializer.opponent_battlefield_serialize(
+            app.battlefield_service.get_opponent_battlefield(
+                current_battle, session.account_id)
+        )
+    except service.EntityNotFoundError:
+        opponent_battlefield = None
+
+    response_body = serializer.battle_serialize(current_battle)
+    response_body['my_battlefield'] = my_battlefield
+    response_body['opponent_battlefield'] = opponent_battlefield
+
     return Response(
-        j(collection(current_battle, serializer.battle_serialize)),
+        j(response_body),
         status=200
     )
 

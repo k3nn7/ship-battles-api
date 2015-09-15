@@ -12,8 +12,10 @@ def battle_serialize(battle):
     return {
         'id': str(battle.id),
         'state': battle.state.value,
-        'attacker_id': str(battle.attacker_id),
-        'defender_id': str(battle.defender_id)
+        'attacker_id': (str(battle.attacker_id)
+                        if battle.attacker_id is not None else None),
+        'defender_id': (str(battle.defender_id)
+                        if battle.defender_id is not None else None)
     }
 
 
@@ -22,6 +24,22 @@ def ship_class_serialize(ship_class):
         'id': ship_class.id,
         'name': ship_class.name,
         'size': ship_class.size
+    }
+
+
+def my_battlefield_serialize(battlefield):
+    return {
+        'id': str(battlefield.id),
+        'battle_id': str(battlefield.battle_id),
+        'account_id': str(battlefield.account_id)
+    }
+
+
+def opponent_battlefield_serialize(battlefield):
+    return {
+        'id': str(battlefield.id),
+        'battle_id': str(battlefield.battle_id),
+        'account_id': str(battlefield.account_id)
     }
 
 
