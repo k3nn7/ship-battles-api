@@ -77,3 +77,11 @@ class ShipClassRepository(CrudRepository):
         self.data = {}
         self.save(ShipClass('keel', 1))
         self.save(ShipClass('destroyer', 2))
+
+
+class BattlefieldRepository(CrudRepository):
+    def find_by_battle_and_account(self, battle_id, account_id):
+        for b in self.data.values():
+            if (b.battle_id == battle_id and b.account_id == account_id):
+                return b
+        raise EntityNotFoundError()

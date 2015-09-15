@@ -126,6 +126,15 @@ class BattlefieldService:
             Battlefield(battle.id, battle.defender_id))
         return [attacker_battlefield, defender_battlefield]
 
+    def get_my_battlefield(self, battle, account_id):
+        return (self.battlefield_repository
+                .find_by_battle_and_account(battle.id, account_id))
+
+    def get_opponent_battlefield(self, battle, account_id):
+        second_account_id = battle.get_second_account_id(account_id)
+        return (self.battlefield_repository
+                .find_by_battle_and_account(battle.id, second_account_id))
+
 
 class SecuredAccountError(Exception):
     pass

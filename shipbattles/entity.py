@@ -67,6 +67,10 @@ class Battle:
     attacker_id = None
     defender_id = None
 
+    def get_second_account_id(self, account_id):
+        return (self.defender_id if self.attacker_id == account_id
+                else self.attacker_id)
+
 
 class BattleState(Enum):
     looking_for_opponent = 1
