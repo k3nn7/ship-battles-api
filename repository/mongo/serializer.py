@@ -47,3 +47,17 @@ class BattleSerializer:
         battle.attacker_id = data['attacker_id']
         battle.defender_id = data['defender_id']
         return battle
+
+
+class BattlefieldSerializer:
+    def serialize(self, battlefield):
+        return {
+            '_id': battlefield.id,
+            'battle_id': battlefield.battle_id,
+            'account_id': battlefield.account_id
+        }
+
+    def deserialize(self, data):
+        battlefield = entity.Battlefield(data['battle_id'], data['account_id'])
+        battlefield.id = data['_id']
+        return battlefield

@@ -81,3 +81,17 @@ class BattleRepository(CrudRepository):
         if cursor.count() == 0:
             return None
         return self.serializer_class.deserialize(cursor[0])
+
+
+class BattlefieldRepository(CrudRepository):
+    def find_by_battle_and_account(self, battle_id, account_id):
+        query = {
+            '$and': [
+                {'battle_id': battle_id},
+                {'account_id': account_id}
+            ]
+        }
+        cursor = self.collection.find(query)
+        if cursor.count() == 0:
+            raise EntityNotFoundError()
+        return self.serializer_class.deserialize(cursor[0])

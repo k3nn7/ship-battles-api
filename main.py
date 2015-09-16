@@ -1,7 +1,7 @@
 from pymongo import MongoClient
 import webapp
 import eventdispatcher
-from shipbattles import service
+from shipbattles import service, event, listener
 from repository import mongo, memory
 from repository.mongo import serializer
 
@@ -13,15 +13,15 @@ def main():
 
     account_repository = mongo.CrudRepository(
         db.accounts, serializer.AccountSerializer())
-
     session_token_repository = mongo.SessionTokenRepository(
         db.session_tokens, serializer.SessionTokenSerializer())
-
     battle_repository = mongo.BattleRepository(
         db.battles, serializer.BattleSerializer()
     )
-
     ship_class_repository = memory.ShipClassRepository()
+    battlefield_repository = mongo.BattlefieldRepository(
+        db.battlefields, serializer.BattlefieldSerializer()
+    )
 
     webapp.app.debug = True
     webapp.app.account_service = service.AccountService(
@@ -38,6 +38,15 @@ def main():
     webapp.app.ship_class_service = service.ShipClassService(
         ship_class_repository
     )
+    webapp.app.battlefield_service = service.BattlefieldService(
+        battlefield_repository
+    )
+
+    dispatcher.register(
+        event.Battle.deploy_finished,
+        listener.BattleDeployFinishedListener(webapp.app.battlefield_service)
+    )
+
     webapp.app.run(host='0.0.0.0', port=8080)
 
 if __name__ == '__main__':
