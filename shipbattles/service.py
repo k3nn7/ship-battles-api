@@ -69,9 +69,12 @@ class SecurityService:
 
 
 class BattleService:
-    def __init__(self, battle_repository, event_dispatcher):
+    def __init__(self, battle_repository, ship_class_repository,
+                 event_dispatcher, battlefield_service):
         self.battle_repository = battle_repository
+        self.ship_class_repository = ship_class_repository
         self.event_dispatcher = event_dispatcher
+        self.battlefield_service = battlefield_service
 
     def attack(self, attacker_id):
         if self._is_in_battle(attacker_id):
@@ -87,6 +90,19 @@ class BattleService:
         return (self
                 .battle_repository
                 .find_ongoing_battle_with_participant(account_id))
+
+    def deploy_ship_for_battle(self, battle_id, account_id, ship):
+        try:
+            self.ship_class_repository.find_by_id(ship.ship_class)
+        except EntityNotFoundError:
+            raise InvalidShipClassError()
+        battle = self.battle_repository.find_by_id(battle_id)
+        if battle.state != BattleState.deploy:
+            raise InvalidBattleStateError()
+        if not battle.is_participant(account_id):
+            raise NotParticipantError
+        self.battlefield_service.deploy_ship_on_battlefield(
+            battle, account_id, ship)
 
     def _is_in_battle(self, attacker_id):
         battles = (self
@@ -135,6 +151,11 @@ class BattlefieldService:
         return (self.battlefield_repository
                 .find_by_battle_and_account(battle.id, second_account_id))
 
+    def deploy_ship_on_battlefield(self, battle, account_id, ship):
+        battlefield = self.get_my_battlefield(battle, account_id)
+        battlefield.deploy(ship)
+        return self.battlefield_repository.save(battlefield)
+
 
 class SecuredAccountError(Exception):
     pass
@@ -157,4 +178,16 @@ class AlreadyInBattleError(Exception):
 
 
 class ValidationError(Exception):
+    pass
+
+
+class InvalidShipClassError(Exception):
+    pass
+
+
+class InvalidBattleStateError(Exception):
+    pass
+
+
+class NotParticipantError(Exception):
     pass

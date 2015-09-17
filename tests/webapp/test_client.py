@@ -22,17 +22,18 @@ def build():
         account_repository,
         session_token_repository
     )
-    webapp.app.battle_service = service.BattleService(
-        battle_repository,
-        dispatcher
-    )
     webapp.app.ship_class_service = service.ShipClassService(
         ship_class_repository
     )
     webapp.app.battlefield_service = service.BattlefieldService(
         battlefield_repository
     )
-
+    webapp.app.battle_service = service.BattleService(
+        battle_repository,
+        ship_class_repository,
+        dispatcher,
+        webapp.app.battlefield_service
+    )
     dispatcher.register(
         event.Battle.deploy_finished,
         listener.BattleDeployFinishedListener(webapp.app.battlefield_service)

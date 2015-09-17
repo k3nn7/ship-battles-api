@@ -1,19 +1,24 @@
 import unittest
 from unittest.mock import Mock
 from shipbattles.service import BattleService
-from shipbattles.service import AlreadyInBattleError
-from shipbattles.entity import BattleState, Battle
-from repository.memory import BattleRepository
+from shipbattles.service import AlreadyInBattleError, InvalidShipClassError
+from shipbattles.service import InvalidBattleStateError, NotParticipantError
+from shipbattles.entity import BattleState, Battle, Coordinates, Ship
+from repository.memory import BattleRepository, ShipClassRepository
 from shipbattles import event
 
 
 class TestBattleService(unittest.TestCase):
     def setUp(self):
         self.battle_repository = BattleRepository()
+        self.ship_class_repository = ShipClassRepository()
         self.event_dispatcher = Mock()
+        self.battlefield_service = Mock()
         self.battle_service = BattleService(
             self.battle_repository,
-            self.event_dispatcher
+            self.ship_class_repository,
+            self.event_dispatcher,
+            self.battlefield_service
         )
 
     def test_attack_and_wait_for_opponent(self):
@@ -55,8 +60,50 @@ class TestBattleService(unittest.TestCase):
         current_battle = self.battle_service.get_current_battle(account_id)
         self.assertEqual(battle, current_battle)
 
+    def test_deploy_valid_ship_class(self):
+        battle = self._deploy_state_battle()
+        account_id = 3
+        ship = Ship('is:1', Coordinates(3, 4))
+        self.battle_service.deploy_ship_for_battle(
+            battle.id,
+            account_id,
+            ship
+        )
+        (self.battlefield_service
+            .deploy_ship_on_battlefield
+            .assert_called_with(
+                battle, account_id, ship))
+
+    def test_deploy_invalid_ship_class(self):
+        battle = self._deploy_state_battle()
+        account_id = 3
+        ship = Ship('foo', Coordinates(3, 4))
+        with self.assertRaises(InvalidShipClassError):
+            self.battle_service.deploy_ship_for_battle(
+                battle.id, account_id, ship)
+
+    def test_deploy_if_battle_in_invalid_state(self):
+        account_id = 3
+        battle = self.battle_service.attack(account_id)
+        ship = Ship('is:1', Coordinates(3, 4))
+        with self.assertRaises(InvalidBattleStateError):
+            self.battle_service.deploy_ship_for_battle(
+                battle.id, account_id, ship)
+
+    def test_deploy_if_invalid_account_id(self):
+        battle = self._deploy_state_battle()
+        ship = Ship('is:1', Coordinates(3, 4))
+        with self.assertRaises(NotParticipantError):
+            self.battle_service.deploy_ship_for_battle(
+                battle.id, 4, ship)
+
     def _looking_for_opponent_battle(self):
         battle = Battle()
         battle.state = BattleState.looking_for_opponent
         battle.attacker_id = 8
         return battle
+
+    def _deploy_state_battle(self):
+        attacker_id = 3
+        self.battle_repository.save(self._looking_for_opponent_battle())
+        return self.battle_service.attack(attacker_id)

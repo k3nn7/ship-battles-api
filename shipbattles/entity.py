@@ -71,6 +71,9 @@ class Battle:
         return (self.defender_id if self.attacker_id == account_id
                 else self.attacker_id)
 
+    def is_participant(self, account_id):
+        return self.attacker_id == account_id or self.defender_id == account_id
+
 
 class BattleState(Enum):
     looking_for_opponent = 1
@@ -84,11 +87,27 @@ class ShipClass:
         self.size = size
 
 
+class Ship:
+    def __init__(self, ship_class, coordinates):
+        self.ship_class = ship_class
+        self.coordinates = coordinates
+
+
 class Battlefield:
     def __init__(self, battle_id, account_id):
         self.id = None
         self.battle_id = battle_id
         self.account_id = account_id
+        self.ships = []
+
+    def deploy(self, ship):
+        self.ships.append(ship)
+
+
+class Coordinates:
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
 
 
 class InvalidPasswordError(Exception):
