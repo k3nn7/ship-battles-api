@@ -26,7 +26,8 @@ def build():
         ship_class_repository
     )
     webapp.app.battlefield_service = service.BattlefieldService(
-        battlefield_repository
+        battlefield_repository,
+        {}
     )
     webapp.app.battle_service = service.BattleService(
         battle_repository,

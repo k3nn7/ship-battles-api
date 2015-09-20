@@ -1,14 +1,20 @@
 import unittest
 from shipbattles.service import BattlefieldService
+from shipbattles.service import ShipNotInInventoryError
 from shipbattles.entity import Battle, Coordinates, Ship
 from repository.memory import BattlefieldRepository
 
 
 class TestBattlefieldService(unittest.TestCase):
     def setUp(self):
+        battlefield_inventory = {
+            'id:1': 1,
+            'id:2': 1
+        }
         self.battlefield_repository = BattlefieldRepository()
         self.battlefield_service = BattlefieldService(
-            self.battlefield_repository
+            self.battlefield_repository,
+            battlefield_inventory
         )
 
     def test_create_battlefields_for_battle(self):
@@ -63,7 +69,7 @@ class TestBattlefieldService(unittest.TestCase):
         self.battlefield_service.create_battlefields_for_battle(battle)
 
         account_id = 'id:5'
-        ship = Ship(1, Coordinates(3, 4))
+        ship = Ship('id:1', Coordinates(3, 4))
         returned = self.battlefield_service.deploy_ship_on_battlefield(
             battle, account_id, ship)
         battlefield = self.battlefield_service.get_my_battlefield(
@@ -71,6 +77,28 @@ class TestBattlefieldService(unittest.TestCase):
         self.assertEqual(battlefield, returned)
         self.assertTrue(len(battlefield.ships) == 1)
         self.assertEqual(ship, battlefield.ships[0])
+
+    def test_deploy_ship_that_is_not_in_inventory(self):
+        battle = self._get_battle()
+        self.battlefield_service.create_battlefields_for_battle(battle)
+
+        account_id = 'id:5'
+        ship = Ship('id:10', Coordinates(3, 4))
+        with self.assertRaises(ShipNotInInventoryError):
+            self.battlefield_service.deploy_ship_on_battlefield(
+                battle, account_id, ship)
+
+    def test_deploy_ship_that_no_more_in_inventory(self):
+        battle = self._get_battle()
+        self.battlefield_service.create_battlefields_for_battle(battle)
+
+        account_id = 'id:5'
+        ship = Ship('id:1', Coordinates(3, 4))
+        self.battlefield_service.deploy_ship_on_battlefield(
+            battle, account_id, ship)
+        with self.assertRaises(ShipNotInInventoryError):
+            self.battlefield_service.deploy_ship_on_battlefield(
+                battle, account_id, ship)
 
     def _get_battle(self):
         battle = Battle()
