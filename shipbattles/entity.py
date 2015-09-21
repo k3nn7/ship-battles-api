@@ -99,8 +99,14 @@ class Battlefield:
         self.battle_id = battle_id
         self.account_id = account_id
         self.ships = []
+        self.inventory = []
 
     def deploy(self, ship):
+        if ship.ship_class not in self.inventory.keys():
+            raise ShipNotInInventoryError()
+        if self.inventory[ship.ship_class] <= 0:
+            raise ShipNotInInventoryError()
+        self.inventory[ship.ship_class] -= 1
         self.ships.append(ship)
 
 
@@ -115,4 +121,8 @@ class InvalidPasswordError(Exception):
 
 
 class InvalidNicknameError(Exception):
+    pass
+
+
+class ShipNotInInventoryError(Exception):
     pass

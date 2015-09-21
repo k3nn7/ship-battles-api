@@ -138,10 +138,15 @@ class BattlefieldService:
         self.battlefield_inventory = battlefield_inventory
 
     def create_battlefields_for_battle(self, battle):
+        attacker_battlefield = Battlefield(battle.id, battle.attacker_id)
+        attacker_battlefield.inventory = copy(self.battlefield_inventory)
         attacker_battlefield = self.battlefield_repository.save(
-            Battlefield(battle.id, battle.attacker_id))
+            attacker_battlefield)
+
+        defender_battlefield = Battlefield(battle.id, battle.defender_id)
+        defender_battlefield.inventory = copy(self.battlefield_inventory)
         defender_battlefield = self.battlefield_repository.save(
-            Battlefield(battle.id, battle.defender_id))
+            defender_battlefield)
         return [attacker_battlefield, defender_battlefield]
 
     def get_my_battlefield(self, battle, account_id):
@@ -155,14 +160,6 @@ class BattlefieldService:
 
     def deploy_ship_on_battlefield(self, battle, account_id, ship):
         battlefield = self.get_my_battlefield(battle, account_id)
-        available_ships = copy(self.battlefield_inventory)
-        for ship in battlefield.ships:
-            available_ships[ship.ship_class] -= 1
-        if ship.ship_class not in available_ships.keys():
-            raise ShipNotInInventoryError()
-        if available_ships[ship.ship_class] <= 0:
-            raise ShipNotInInventoryError()
-
         battlefield.deploy(ship)
         return self.battlefield_repository.save(battlefield)
 
@@ -200,8 +197,4 @@ class InvalidBattleStateError(Exception):
 
 
 class NotParticipantError(Exception):
-    pass
-
-
-class ShipNotInInventoryError(Exception):
     pass

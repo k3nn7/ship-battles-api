@@ -1,6 +1,6 @@
 import unittest
 from shipbattles.service import BattlefieldService
-from shipbattles.service import ShipNotInInventoryError
+from shipbattles.entity import ShipNotInInventoryError
 from shipbattles.entity import Battle, Coordinates, Ship
 from repository.memory import BattlefieldRepository
 
