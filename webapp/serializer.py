@@ -31,7 +31,17 @@ def my_battlefield_serialize(battlefield):
     return {
         'id': str(battlefield.id),
         'battle_id': str(battlefield.battle_id),
-        'account_id': str(battlefield.account_id)
+        'account_id': str(battlefield.account_id),
+        'ships': collection(battlefield.ships, ship_serialize),
+        'inventory': battlefield.inventory
+    }
+
+
+def ship_serialize(ship):
+    return {
+        'id': str(ship.ship_class),
+        'x': ship.coordinates.x,
+        'y': ship.coordinates.y
     }
 
 

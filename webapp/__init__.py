@@ -2,7 +2,7 @@ from flask import Flask
 from flask import request, Response
 from webapp import serializer
 from webapp.serializer import collection, j
-from shipbattles import service
+from shipbattles import service, entity
 import json
 
 
@@ -117,6 +117,33 @@ def battle_get_current():
 
     return Response(
         j(response_body),
+        status=200
+    )
+
+
+@app.route('/api/v1/battle/my-battlefield', methods=['PUT'])
+def deploy_ship():
+    session = authenticate_by_hash(request)
+    request_body = json.loads(request.data.decode('utf-8'))
+
+    current_battle = app.battle_service.get_current_battle(session.account_id)
+    my_battlefield = app.battlefield_service.get_my_battlefield(
+        current_battle, session.account_id)
+
+    for ship_data in request_body['ships']:
+        try:
+            ship = entity.Ship(ship_data['id'], entity.Coordinates(
+                ship_data['x'], ship_data['y']))
+            app.battle_service.deploy_ship_for_battle(
+                current_battle.id, session.account_id, ship)
+        except service.InvalidShipClassError:
+            pass
+
+    my_battlefield = app.battlefield_service.get_my_battlefield(
+        current_battle, session.account_id)
+
+    return Response(
+        j(serializer.my_battlefield_serialize(my_battlefield)),
         status=200
     )
 

@@ -12,7 +12,7 @@ def build():
     account_repository = memory.AccountRepository()
     session_token_repository = memory.SessionTokenRepository()
     battle_repository = memory.BattleRepository()
-    ship_class_repository = memory.ShipClassRepository()
+    webapp.app.ship_class_repository = memory.ShipClassRepository()
     battlefield_repository = memory.BattlefieldRepository()
 
     webapp.app.account_service = service.AccountService(
@@ -23,15 +23,15 @@ def build():
         session_token_repository
     )
     webapp.app.ship_class_service = service.ShipClassService(
-        ship_class_repository
+        webapp.app.ship_class_repository
     )
     webapp.app.battlefield_service = service.BattlefieldService(
         battlefield_repository,
-        {}
+        {'is:0': 1, 'is:1': 1}
     )
     webapp.app.battle_service = service.BattleService(
         battle_repository,
-        ship_class_repository,
+        webapp.app.ship_class_repository,
         dispatcher,
         webapp.app.battlefield_service
     )

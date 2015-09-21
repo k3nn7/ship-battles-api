@@ -44,11 +44,22 @@ class TestGetCurrentBattle(unittest.TestCase):
         self.assertIsNotNone(response_body['state'])
         self.assertIsNotNone(response_body['attacker_id'])
         self.assertIsNotNone(response_body['defender_id'])
+        self._validate_my_battlefield_in_response(response_body)
+
+    def _validate_my_battlefield_in_response(self, response_body):
+        expected_inventory = {'is:0': 1, 'is:1': 1}
         self.assertIsNotNone(response_body['my_battlefield'])
         self.assertIsNotNone(response_body['my_battlefield']['id'])
+        self.assertIsNotNone(response_body['my_battlefield']['ships'])
+        self.assertIsNotNone(response_body['my_battlefield']['inventory'])
+        self.assertEqual(
+            expected_inventory, response_body['my_battlefield']['inventory'])
+
+    def _validate_opponent_battlefield_in_response(self, response_body):
         self.assertIsNotNone(response_body['opponent_battlefield'])
         self.assertIsNotNone(response_body['opponent_battlefield']['id'])
-
+        self.assertNotIn('ships', response_body['opponent_battlefield'])
+        self.assertNotIn('inventory', response_body['opponent_battlefield'])
 
     def _do_auth_request(self):
         response = self.app.post('/api/v1/account')
