@@ -3,6 +3,7 @@ from unittest.mock import Mock
 from shipbattles.service import BattleService
 from shipbattles.service import AlreadyInBattleError, InvalidShipClassError
 from shipbattles.service import InvalidBattleStateError, NotParticipantError
+from shipbattles.service import NotAllShipsDeployedError
 from shipbattles.entity import BattleState, Battle, Coordinates, Ship
 from repository.memory import BattleRepository, ShipClassRepository
 from shipbattles import event
@@ -97,6 +98,36 @@ class TestBattleService(unittest.TestCase):
             self.battle_service.deploy_ship_for_battle(
                 battle.id, 4, ship)
 
+    def test_set_ready_state_when_not_all_ships_deployed(self):
+        battle = self._deploy_state_battle()
+        account_id = 3
+        self.battlefield_service.mark_ready = Mock(
+            side_effect=NotAllShipsDeployedError())
+        with self.assertRaises(NotAllShipsDeployedError):
+            self.battle_service.ready_for_battle(account_id, battle.id)
+
+    def test_battle_keep_state_if_only_one_player_is_ready(self):
+        battle = self._deploy_state_battle()
+        account_id = 3
+        self.battlefield_service.get_my_battlefield = Mock(
+            return_value=self._ready_for_battle_battlefield())
+        self.battlefield_service.get_opponent_battlefield = Mock(
+            return_value=self._not_ready_for_battle_battlefield())
+        self.battle_service.ready_for_battle(account_id, battle.id)
+        battle = self.battle_repository.find_by_id(battle.id)
+        self.assertEqual(BattleState.deploy, battle.state)
+
+    def test_fire_exchange_when_both_players_ready(self):
+        battle = self._deploy_state_battle()
+        account_id = 3
+        self.battlefield_service.get_my_battlefield = Mock(
+            return_value=self._ready_for_battle_battlefield())
+        self.battlefield_service.get_opponent_battlefield = Mock(
+            return_value=self._ready_for_battle_battlefield())
+        self.battle_service.ready_for_battle(account_id, battle.id)
+        battle = self.battle_repository.find_by_id(battle.id)
+        self.assertEqual(BattleState.fire_exchange, battle.state)
+
     def _looking_for_opponent_battle(self):
         battle = Battle()
         battle.state = BattleState.looking_for_opponent
@@ -107,3 +138,13 @@ class TestBattleService(unittest.TestCase):
         attacker_id = 3
         self.battle_repository.save(self._looking_for_opponent_battle())
         return self.battle_service.attack(attacker_id)
+
+    def _not_ready_for_battle_battlefield(self):
+        battlefield = Mock()
+        battlefield.ready_for_battle = False
+        return battlefield
+
+    def _ready_for_battle_battlefield(self):
+        battlefield = Mock()
+        battlefield.ready_for_battle = True
+        return battlefield

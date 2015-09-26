@@ -1,5 +1,5 @@
 import unittest
-from shipbattles.service import BattlefieldService
+from shipbattles.service import BattlefieldService, NotAllShipsDeployedError
 from shipbattles.entity import ShipNotInInventoryError
 from shipbattles.entity import Battle, Coordinates, Ship
 from repository.memory import BattlefieldRepository
@@ -99,6 +99,39 @@ class TestBattlefieldService(unittest.TestCase):
         with self.assertRaises(ShipNotInInventoryError):
             self.battlefield_service.deploy_ship_on_battlefield(
                 battle, account_id, ship)
+
+    def test_mark_battlefield_ready_when_no_ships_deployed(self):
+        battle = self._get_battle()
+        battlefields = (self.battlefield_service
+                        .create_battlefields_for_battle(battle))
+        with self.assertRaises(NotAllShipsDeployedError):
+            self.battlefield_service.mark_ready(battlefields[0].id)
+
+    def test_mark_battlefield_ready_when_not_all_ships_deployed(self):
+        battle = self._get_battle()
+        battlefields = (self.battlefield_service
+                        .create_battlefields_for_battle(battle))
+        account_id = 'id:5'
+        self.battlefield_service.deploy_ship_on_battlefield(
+            battle, account_id, Ship('id:2', Coordinates(3, 4)))
+
+        with self.assertRaises(NotAllShipsDeployedError):
+            self.battlefield_service.mark_ready(battlefields[0].id)
+
+    def test_mark_battlefield_ready_when_all_ships_deployed(self):
+        battle = self._get_battle()
+        battlefields = (self.battlefield_service
+                        .create_battlefields_for_battle(battle))
+        account_id = 'id:5'
+        self.battlefield_service.deploy_ship_on_battlefield(
+            battle, account_id, Ship('id:1', Coordinates(3, 4)))
+        self.battlefield_service.deploy_ship_on_battlefield(
+            battle, account_id, Ship('id:2', Coordinates(3, 4)))
+
+        self.battlefield_service.mark_ready(battlefields[0].id)
+        battlefield = self.battlefield_service.get_my_battlefield(
+            battle, account_id)
+        self.assertTrue(battlefield.ready_for_battle)
 
     def _get_battle(self):
         battle = Battle()

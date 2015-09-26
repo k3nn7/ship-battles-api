@@ -78,6 +78,7 @@ class Battle:
 class BattleState(Enum):
     looking_for_opponent = 1
     deploy = 2
+    fire_exchange = 3
 
 
 class ShipClass:
@@ -100,6 +101,7 @@ class Battlefield:
         self.account_id = account_id
         self.ships = []
         self.inventory = []
+        self.ready_for_battle = False
 
     def deploy(self, ship):
         if ship.ship_class not in self.inventory.keys():
@@ -108,6 +110,12 @@ class Battlefield:
             raise ShipNotInInventoryError()
         self.inventory[ship.ship_class] -= 1
         self.ships.append(ship)
+
+    def all_ships_deployed(self):
+        for count in self.inventory.values():
+            if count > 0:
+                return False
+        return True
 
 
 class Coordinates:

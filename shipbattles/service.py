@@ -105,6 +105,18 @@ class BattleService:
         self.battlefield_service.deploy_ship_on_battlefield(
             battle, account_id, ship)
 
+    def ready_for_battle(self, account_id, battle_id):
+        battle = self.battle_repository.find_by_id(battle_id)
+        battlefield = self.battlefield_service.get_my_battlefield(
+            battle, account_id)
+        self.battlefield_service.mark_ready(battlefield.id)
+        opponent_battlefield = (self.battlefield_service
+                                .get_opponent_battlefield(battle, account_id))
+        if (battlefield.ready_for_battle
+                and opponent_battlefield.ready_for_battle):
+            battle.state = BattleState.fire_exchange
+            self.battle_repository.save(battle)
+
     def _is_in_battle(self, attacker_id):
         battles = (self
                    .battle_repository
@@ -163,6 +175,13 @@ class BattlefieldService:
         battlefield.deploy(ship)
         return self.battlefield_repository.save(battlefield)
 
+    def mark_ready(self, battlefield_id):
+        battlefield = self.battlefield_repository.find_by_id(battlefield_id)
+        if not battlefield.all_ships_deployed():
+            raise NotAllShipsDeployedError()
+        battlefield.ready_for_battle = True
+        self.battlefield_repository.save(battlefield)
+
 
 class SecuredAccountError(Exception):
     pass
@@ -197,4 +216,8 @@ class InvalidBattleStateError(Exception):
 
 
 class NotParticipantError(Exception):
+    pass
+
+
+class NotAllShipsDeployedError(Exception):
     pass
