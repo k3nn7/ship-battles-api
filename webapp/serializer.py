@@ -34,7 +34,8 @@ def my_battlefield_serialize(battlefield):
         'account_id': str(battlefield.account_id),
         'ships': collection(battlefield.ships, ship_serialize),
         'inventory': battlefield.inventory,
-        'ready_for_battle': battlefield.ready_for_battle
+        'ready_for_battle': battlefield.ready_for_battle,
+        'shots': collection(battlefield.shots, shot_serialize)
     }
 
 
@@ -46,12 +47,20 @@ def ship_serialize(ship):
     }
 
 
+def shot_serialize(shot):
+    return {
+        'x': shot.x,
+        'y': shot.y
+    }
+
+
 def opponent_battlefield_serialize(battlefield):
     return {
         'id': str(battlefield.id),
         'battle_id': str(battlefield.battle_id),
         'account_id': str(battlefield.account_id),
-        'ready_for_battle': battlefield.ready_for_battle
+        'ready_for_battle': battlefield.ready_for_battle,
+        'shots': collection(battlefield.shots, shot_serialize)
     }
 
 

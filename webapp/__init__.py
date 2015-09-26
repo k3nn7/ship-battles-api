@@ -167,6 +167,31 @@ def ready_for_battle():
     )
 
 
+@app.route('/api/v1/battle/shots', methods=['PUT'])
+def fire():
+    session = authenticate_by_hash(request)
+    request_body = json.loads(request.data.decode('utf-8'))
+    current_battle = app.battle_service.get_current_battle(session.account_id)
+    coordinates = entity.Coordinates(
+        request_body['x'],
+        request_body['y'])
+    try:
+        app.battle_service.fire(
+            current_battle.id,
+            session.account_id,
+            coordinates
+        )
+    except service.InvalidBattleStateError:
+        return Response(
+            None,
+            status=400
+        )
+    return Response(
+        None,
+        status=204
+    )
+
+
 @app.route('/api/v1/ship_classes', methods=['GET'])
 def ship_classes_get():
     ship_classes = app.ship_class_service.get_all()
