@@ -199,6 +199,12 @@ class BattlefieldService:
         battlefield.ready_for_battle = True
         self.battlefield_repository.save(battlefield)
 
+    def fire(self, battle_id, account_id, coordinates):
+        battlefield = (self.battlefield_repository
+                       .find_by_battle_and_account(battle_id, account_id))
+        battlefield.fire(coordinates)
+        self.battlefield_repository.save(battlefield)
+
 
 class SecuredAccountError(Exception):
     pass

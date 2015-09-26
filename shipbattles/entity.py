@@ -109,6 +109,7 @@ class Battlefield:
         self.ships = []
         self.inventory = []
         self.ready_for_battle = False
+        self.shots = []
 
     def deploy(self, ship):
         if ship.ship_class not in self.inventory.keys():
@@ -123,6 +124,9 @@ class Battlefield:
             if count > 0:
                 return False
         return True
+
+    def fire(self, coordinates):
+        self.shots.append(coordinates)
 
 
 class Coordinates:
