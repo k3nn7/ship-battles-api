@@ -148,6 +148,25 @@ def deploy_ship():
     )
 
 
+@app.route('/api/v1/battle/ready', methods=['PUT'])
+def ready_for_battle():
+    session = authenticate_by_hash(request)
+    current_battle = app.battle_service.get_current_battle(session.account_id)
+    try:
+        app.battle_service.ready_for_battle(
+            session.account_id, current_battle.id)
+    except service.NotAllShipsDeployedError:
+        return Response(
+            None,
+            status=400
+        )
+
+    return Response(
+        None,
+        status=204
+    )
+
+
 @app.route('/api/v1/ship_classes', methods=['GET'])
 def ship_classes_get():
     ship_classes = app.ship_class_service.get_all()

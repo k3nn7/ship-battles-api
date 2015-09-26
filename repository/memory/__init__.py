@@ -1,5 +1,6 @@
 from shipbattles.service import EntityNotFoundError
 from shipbattles.entity import BattleState, ShipClass
+from copy import copy
 
 
 class CrudRepository:
@@ -7,6 +8,7 @@ class CrudRepository:
         self.data = {}
 
     def save(self, item):
+        item = copy(item)
         if item.id is None:
             id = 'is:%d' % len(self.data)
             item.id = id
@@ -15,7 +17,7 @@ class CrudRepository:
 
     def find_by_id(self, item_id):
         try:
-            return self.data[item_id]
+            return copy(self.data[item_id])
         except KeyError as e:
             raise EntityNotFoundError(e)
 
@@ -27,7 +29,7 @@ class AccountRepository(CrudRepository):
     def find_by_nickname(self, nickname):
         for account in self.data.values():
             if account.nick == nickname:
-                return account
+                return copy(account)
         return None
 
 
@@ -35,7 +37,7 @@ class SessionTokenRepository(CrudRepository):
     def find_by_hash(self, hash):
         for item in self.data.values():
             if item.hash == hash:
-                return item
+                return copy(item)
         raise EntityNotFoundError()
 
 
@@ -43,7 +45,7 @@ class BattleRepository(CrudRepository):
     def find_looking_for_opponent_battle(self, attacker_id):
         for item in self.data.values():
             if item.state == BattleState.looking_for_opponent:
-                return item
+                return copy(item)
         return None
 
     def find_ongoing_battle_with_participant_count(self, account_id):
@@ -60,7 +62,7 @@ class BattleRepository(CrudRepository):
             participates = self._participates(account_id, battle)
             in_progress = self._in_progress(battle)
             if participates and in_progress:
-                return battle
+                return copy(battle)
         return None
 
     def _participates(self, account_id, battle):
@@ -69,7 +71,8 @@ class BattleRepository(CrudRepository):
 
     def _in_progress(self, battle):
         return ((battle.state == BattleState.looking_for_opponent)
-                or (battle.state == BattleState.deploy))
+                or (battle.state == BattleState.deploy)
+                or (battle.state == BattleState.fire_exchange))
 
 
 class ShipClassRepository(CrudRepository):
@@ -83,5 +86,5 @@ class BattlefieldRepository(CrudRepository):
     def find_by_battle_and_account(self, battle_id, account_id):
         for b in self.data.values():
             if (b.battle_id == battle_id and b.account_id == account_id):
-                return b
+                return copy(b)
         raise EntityNotFoundError()

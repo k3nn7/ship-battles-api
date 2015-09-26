@@ -38,9 +38,15 @@ class TestBattleService(unittest.TestCase):
         self.assertEqual(BattleState.deploy, battle.state)
         self.assertEqual(8, battle.attacker_id)
         self.assertEqual(attacker_id, battle.defender_id)
-        (self.event_dispatcher
-            .dispatch
-            .assert_called_with(event.Battle.deploy_finished, battle))
+
+        self.assertEqual(
+            event.Battle.deploy_finished,
+            self.event_dispatcher.dispatch.call_args[0][0]
+        )
+        self.assertEqual(
+            battle.__dict__,
+            self.event_dispatcher.dispatch.call_args[0][1].__dict__
+        )
 
     def test_can_not_be_in_two_battles(self):
         attacker_id = 3
@@ -59,7 +65,7 @@ class TestBattleService(unittest.TestCase):
         account_id = 8
         battle = self.battle_service.attack(account_id)
         current_battle = self.battle_service.get_current_battle(account_id)
-        self.assertEqual(battle, current_battle)
+        self.assertEqual(battle.__dict__, current_battle.__dict__)
 
     def test_deploy_valid_ship_class(self):
         battle = self._deploy_state_battle()
@@ -70,10 +76,20 @@ class TestBattleService(unittest.TestCase):
             account_id,
             ship
         )
-        (self.battlefield_service
-            .deploy_ship_on_battlefield
-            .assert_called_with(
-                battle, account_id, ship))
+
+        self.assertEqual(
+            battle.__dict__,
+            (self.battlefield_service
+             .deploy_ship_on_battlefield.call_args[0][0].__dict__)
+        )
+        self.assertEqual(
+            account_id,
+            self.battlefield_service.deploy_ship_on_battlefield.call_args[0][1]
+        )
+        self.assertEqual(
+            ship,
+            self.battlefield_service.deploy_ship_on_battlefield.call_args[0][2]
+        )
 
     def test_deploy_invalid_ship_class(self):
         battle = self._deploy_state_battle()

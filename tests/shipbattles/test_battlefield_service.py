@@ -74,7 +74,7 @@ class TestBattlefieldService(unittest.TestCase):
             battle, account_id, ship)
         battlefield = self.battlefield_service.get_my_battlefield(
             battle, account_id)
-        self.assertEqual(battlefield, returned)
+        self.assertEqual(battlefield.__dict__, returned.__dict__)
         self.assertTrue(len(battlefield.ships) == 1)
         self.assertEqual(ship, battlefield.ships[0])
 

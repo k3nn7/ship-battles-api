@@ -33,7 +33,8 @@ def my_battlefield_serialize(battlefield):
         'battle_id': str(battlefield.battle_id),
         'account_id': str(battlefield.account_id),
         'ships': collection(battlefield.ships, ship_serialize),
-        'inventory': battlefield.inventory
+        'inventory': battlefield.inventory,
+        'ready_for_battle': battlefield.ready_for_battle
     }
 
 
@@ -49,7 +50,8 @@ def opponent_battlefield_serialize(battlefield):
     return {
         'id': str(battlefield.id),
         'battle_id': str(battlefield.battle_id),
-        'account_id': str(battlefield.account_id)
+        'account_id': str(battlefield.account_id),
+        'ready_for_battle': battlefield.ready_for_battle
     }
 
 

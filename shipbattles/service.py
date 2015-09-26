@@ -112,6 +112,8 @@ class BattleService:
         self.battlefield_service.mark_ready(battlefield.id)
         opponent_battlefield = (self.battlefield_service
                                 .get_opponent_battlefield(battle, account_id))
+        battlefield = self.battlefield_service.get_my_battlefield(
+            battle, account_id)
         if (battlefield.ready_for_battle
                 and opponent_battlefield.ready_for_battle):
             battle.state = BattleState.fire_exchange
