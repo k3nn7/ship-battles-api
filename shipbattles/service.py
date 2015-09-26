@@ -119,6 +119,15 @@ class BattleService:
             battle.state = BattleState.fire_exchange
             self.battle_repository.save(battle)
 
+    def fire(self, battle_id, account_id, coordinates):
+        battle = self.battle_repository.find_by_id(battle_id)
+        if not battle.state == BattleState.fire_exchange:
+            raise InvalidBattleStateError()
+        if not account_id == battle.turn_account_id:
+            raise InvalidPlayerError()
+        battle.next_player_turn()
+        self.battle_repository.save(battle)
+
     def _is_in_battle(self, attacker_id):
         battles = (self
                    .battle_repository
@@ -135,6 +144,7 @@ class BattleService:
         battle = Battle()
         battle.state = BattleState.looking_for_opponent
         battle.attacker_id = attacker_id
+        battle.turn_account_id = attacker_id
         return self.battle_repository.save(battle)
 
 
@@ -222,4 +232,8 @@ class NotParticipantError(Exception):
 
 
 class NotAllShipsDeployedError(Exception):
+    pass
+
+
+class InvalidPlayerError(Exception):
     pass

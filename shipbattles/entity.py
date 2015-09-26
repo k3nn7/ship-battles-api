@@ -66,6 +66,7 @@ class Battle:
     state = None
     attacker_id = None
     defender_id = None
+    turn_account_id = None
 
     def get_second_account_id(self, account_id):
         return (self.defender_id if self.attacker_id == account_id
@@ -73,6 +74,12 @@ class Battle:
 
     def is_participant(self, account_id):
         return self.attacker_id == account_id or self.defender_id == account_id
+
+    def next_player_turn(self):
+        if self.turn_account_id == self.attacker_id:
+            self.turn_account_id = self.defender_id
+        else:
+            self.turn_account_id = self.attacker_id
 
 
 class BattleState(Enum):

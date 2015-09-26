@@ -3,8 +3,8 @@ from unittest.mock import Mock
 from shipbattles.service import BattleService
 from shipbattles.service import AlreadyInBattleError, InvalidShipClassError
 from shipbattles.service import InvalidBattleStateError, NotParticipantError
-from shipbattles.service import NotAllShipsDeployedError
-from shipbattles.entity import BattleState, Battle, Coordinates, Ship
+from shipbattles.service import NotAllShipsDeployedError, InvalidPlayerError
+from shipbattles.entity import BattleState, Coordinates, Ship
 from repository.memory import BattleRepository, ShipClassRepository
 from shipbattles import event
 
@@ -144,11 +144,94 @@ class TestBattleService(unittest.TestCase):
         battle = self.battle_repository.find_by_id(battle.id)
         self.assertEqual(BattleState.fire_exchange, battle.state)
 
+    def test_cannot_fire_when_not_in_fire_exchange(self):
+        battle = self._deploy_state_battle()
+        account_id = 3
+        with self.assertRaises(InvalidBattleStateError):
+            self.battle_service.fire(
+                battle.id,
+                account_id,
+                Coordinates(3, 3)
+            )
+
+    def test_attacker_can_fire_in_fire_exchange(self):
+        battle = self._deploy_state_battle()
+        account_id = 8
+        self.battlefield_service.get_my_battlefield = Mock(
+            return_value=self._ready_for_battle_battlefield())
+        self.battlefield_service.get_opponent_battlefield = Mock(
+            return_value=self._ready_for_battle_battlefield())
+        self.battle_service.ready_for_battle(account_id, battle.id)
+
+        self.battle_service.fire(
+            battle.id,
+            account_id,
+            Coordinates(3, 3)
+        )
+
+    def test_defender_cannot_fire_first(self):
+        battle = self._deploy_state_battle()
+        defender_id = 3
+        self.battlefield_service.get_my_battlefield = Mock(
+            return_value=self._ready_for_battle_battlefield())
+        self.battlefield_service.get_opponent_battlefield = Mock(
+            return_value=self._ready_for_battle_battlefield())
+        self.battle_service.ready_for_battle(defender_id, battle.id)
+
+        with self.assertRaises(InvalidPlayerError):
+            self.battle_service.fire(
+                battle.id,
+                defender_id,
+                Coordinates(3, 3)
+            )
+
+    def test_player_cannot_fire_twice_in_a_row(self):
+        battle = self._deploy_state_battle()
+        account_id = 8
+        self.battlefield_service.get_my_battlefield = Mock(
+            return_value=self._ready_for_battle_battlefield())
+        self.battlefield_service.get_opponent_battlefield = Mock(
+            return_value=self._ready_for_battle_battlefield())
+        self.battle_service.ready_for_battle(account_id, battle.id)
+        self.battle_service.fire(
+            battle.id,
+            account_id,
+            Coordinates(3, 3)
+        )
+        with self.assertRaises(InvalidPlayerError):
+            self.battle_service.fire(
+                battle.id,
+                account_id,
+                Coordinates(5, 5)
+            )
+
+    def test_players_fire_sequentialy(self):
+        battle = self._deploy_state_battle()
+        account_id = 8
+        defender_id = 3
+        self.battlefield_service.get_my_battlefield = Mock(
+            return_value=self._ready_for_battle_battlefield())
+        self.battlefield_service.get_opponent_battlefield = Mock(
+            return_value=self._ready_for_battle_battlefield())
+        self.battle_service.ready_for_battle(account_id, battle.id)
+        self.battle_service.fire(
+            battle.id,
+            account_id,
+            Coordinates(3, 3)
+        )
+        self.battle_service.fire(
+            battle.id,
+            defender_id,
+            Coordinates(5, 5)
+        )
+        self.battle_service.fire(
+            battle.id,
+            account_id,
+            Coordinates(3, 3)
+        )
+
     def _looking_for_opponent_battle(self):
-        battle = Battle()
-        battle.state = BattleState.looking_for_opponent
-        battle.attacker_id = 8
-        return battle
+        return self.battle_service.attack(8)
 
     def _deploy_state_battle(self):
         attacker_id = 3
