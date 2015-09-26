@@ -130,6 +130,12 @@ class Coordinates:
         self.x = x
         self.y = y
 
+    def __eq__(self, other):
+        if not self.__class__ == other.__class__:
+            return False
+        return ((self.x == other.x)
+                and (self.y == other.y))
+
 
 class InvalidPasswordError(Exception):
     pass

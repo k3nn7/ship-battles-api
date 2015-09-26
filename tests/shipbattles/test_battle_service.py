@@ -153,6 +153,7 @@ class TestBattleService(unittest.TestCase):
                 account_id,
                 Coordinates(3, 3)
             )
+        assert not self.battlefield_service.fire.called
 
     def test_attacker_can_fire_in_fire_exchange(self):
         battle = self._deploy_state_battle()
@@ -167,6 +168,9 @@ class TestBattleService(unittest.TestCase):
             battle.id,
             account_id,
             Coordinates(3, 3)
+        )
+        self.battlefield_service.fire.assert_called_with(
+            battle.id, account_id, Coordinates(3, 3)
         )
 
     def test_defender_cannot_fire_first(self):
