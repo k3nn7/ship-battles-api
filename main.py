@@ -31,15 +31,18 @@ def main():
         account_repository,
         session_token_repository
     )
+    webapp.app.battlefield_service = service.BattlefieldService(
+        battlefield_repository,
+        {'is:0': 1, 'is:1': 1}
+    )
     webapp.app.battle_service = service.BattleService(
         battle_repository,
-        dispatcher
+        ship_class_repository,
+        dispatcher,
+        webapp.app.battlefield_service
     )
     webapp.app.ship_class_service = service.ShipClassService(
         ship_class_repository
-    )
-    webapp.app.battlefield_service = service.BattlefieldService(
-        battlefield_repository
     )
 
     dispatcher.register(

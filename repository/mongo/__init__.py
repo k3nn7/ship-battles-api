@@ -73,7 +73,8 @@ class BattleRepository(CrudRepository):
                 ]},
                 {'$or': [
                     {'state': BattleState.looking_for_opponent.value},
-                    {'state': BattleState.deploy.value}
+                    {'state': BattleState.deploy.value},
+                    {'state': BattleState.fire_exchange.value}
                 ]}
             ]
         }
