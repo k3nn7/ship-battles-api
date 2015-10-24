@@ -44,7 +44,7 @@ class TestFire(unittest.TestCase):
         response = self._do_fire_request(auth_token1, body)
         self.assertEqual(204, response.status_code)
 
-        response = self._do_get_curret_battle_request(auth_token)
+        response = self._do_get_curret_battle_request(auth_token1)
         response_body = json.loads(response.get_data().decode('utf-8'))
         self.assertEqual(
             3, response_body['opponent_battlefield']['shots'][0]['x'])

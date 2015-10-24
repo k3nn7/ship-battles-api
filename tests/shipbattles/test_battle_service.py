@@ -158,11 +158,14 @@ class TestBattleService(unittest.TestCase):
     def test_attacker_can_fire_in_fire_exchange(self):
         battle = self._deploy_state_battle()
         account_id = 8
+        defender_id = 3
         self.battlefield_service.get_my_battlefield = Mock(
             return_value=self._ready_for_battle_battlefield())
         self.battlefield_service.get_opponent_battlefield = Mock(
             return_value=self._ready_for_battle_battlefield())
+
         self.battle_service.ready_for_battle(account_id, battle.id)
+
 
         self.battle_service.fire(
             battle.id,
@@ -170,7 +173,7 @@ class TestBattleService(unittest.TestCase):
             Coordinates(3, 3)
         )
         self.battlefield_service.fire.assert_called_with(
-            battle.id, account_id, Coordinates(3, 3)
+            battle.id, defender_id, Coordinates(3, 3)
         )
 
     def test_defender_cannot_fire_first(self):
