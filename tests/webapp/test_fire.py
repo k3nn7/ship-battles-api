@@ -41,6 +41,7 @@ class TestFire(unittest.TestCase):
             'x': 3,
             'y': 4
         }
+
         response = self._do_fire_request(auth_token1, body)
         self.assertEqual(204, response.status_code)
 
@@ -50,6 +51,8 @@ class TestFire(unittest.TestCase):
             3, response_body['opponent_battlefield']['shots'][0]['x'])
         self.assertEqual(
             4, response_body['opponent_battlefield']['shots'][0]['y'])
+        self.assertEqual(
+            'is:1', response_body['turn_account_id'])
 
     def _do_auth_request(self):
         response = self.app.post('/api/v1/account')

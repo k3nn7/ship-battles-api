@@ -15,7 +15,8 @@ def battle_serialize(battle):
         'attacker_id': (str(battle.attacker_id)
                         if battle.attacker_id is not None else None),
         'defender_id': (str(battle.defender_id)
-                        if battle.defender_id is not None else None)
+                        if battle.defender_id is not None else None),
+        'turn_account_id': str(battle.turn_account_id),
     }
 
 
