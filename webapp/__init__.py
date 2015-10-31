@@ -179,20 +179,20 @@ def fire():
         request_body['x'],
         request_body['y'])
     try:
-        app.battle_service.fire(
+        result = app.battle_service.fire(
             current_battle.id,
             session.account_id,
             coordinates
+        )
+        return Response(
+            j({'fire_result': result.value}),
+            status=200
         )
     except service.InvalidBattleStateError:
         return Response(
             None,
             status=400
         )
-    return Response(
-        None,
-        status=204
-    )
 
 
 @app.route('/api/v1/ship_classes', methods=['GET'])

@@ -238,6 +238,24 @@ class TestBattleService(unittest.TestCase):
             Coordinates(3, 3)
         )
 
+    def test_fire_returns_fire_reesult(self):
+        battle = self._deploy_state_battle()
+        account_id = 8
+        self.battlefield_service.get_my_battlefield = Mock(
+            return_value=self._ready_for_battle_battlefield())
+        self.battlefield_service.get_opponent_battlefield = Mock(
+            return_value=self._ready_for_battle_battlefield())
+        self.battlefield_service.fire = Mock(
+            return_value=2)
+        self.battle_service.ready_for_battle(account_id, battle.id)
+        result = self.battle_service.fire(
+            battle.id,
+            account_id,
+            Coordinates(3, 3)
+        )
+
+        self.assertEqual(2, result)
+
     def _looking_for_opponent_battle(self):
         return self.battle_service.attack(8)
 

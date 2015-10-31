@@ -126,13 +126,14 @@ class BattleService:
         if not account_id == battle.turn_account_id:
             raise InvalidPlayerError()
         defender_id = battle.get_second_account_id(account_id)
-        self.battlefield_service.fire(
+        result = self.battlefield_service.fire(
             battle.id,
             defender_id,
             coordinates
         )
         battle.next_player_turn()
         self.battle_repository.save(battle)
+        return result
 
     def _is_in_battle(self, attacker_id):
         battles = (self

@@ -19,7 +19,7 @@ class TestFire(unittest.TestCase):
         response = self._do_fire_request(auth_token, body)
         self.assertEqual(400, response.status_code)
 
-    def test_change_state_when_both_players_ready(self):
+    def test_fire_when_in_fire_exchange(self):
         body = {
             'ships': [
                 {'id': 'id:0', 'x': 3, 'y': 4},
@@ -43,7 +43,9 @@ class TestFire(unittest.TestCase):
         }
 
         response = self._do_fire_request(auth_token1, body)
-        self.assertEqual(204, response.status_code)
+        self.assertEqual(200, response.status_code)
+        response_body = json.loads(response.get_data().decode('utf-8'))
+        self.assertEqual(3, response_body['fire_result'])
 
         response = self._do_get_curret_battle_request(auth_token1)
         response_body = json.loads(response.get_data().decode('utf-8'))
