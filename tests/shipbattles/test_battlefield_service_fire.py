@@ -1,7 +1,7 @@
 import unittest
-from shipbattles.service import BattlefieldService, NotAllShipsDeployedError
-from shipbattles.entity import ShipNotInInventoryError
+from shipbattles.service import BattlefieldService
 from shipbattles.entity import Battle, Coordinates, Ship, FireResult
+from shipbattles.entity import DoubledShotError
 from repository.memory import BattlefieldRepository
 from repository import serializer
 
@@ -65,6 +65,24 @@ class TestBattlefieldService(unittest.TestCase):
             Coordinates(3, 3),
             battlefield.shots[0]
         )
+
+    def test_can_not_fire_twice_at_same_place(self):
+        battle = self._get_battle()
+        (self.battlefield_service
+         .create_battlefields_for_battle(battle))
+        account_id = 'id:5'
+        self.battlefield_service.fire(
+            battle.id,
+            account_id,
+            Coordinates(3, 3)
+        )
+
+        with self.assertRaises(DoubledShotError):
+            self.battlefield_service.fire(
+                battle.id,
+                account_id,
+                Coordinates(3, 3)
+            )
 
     def _get_battle(self):
         battle = Battle()

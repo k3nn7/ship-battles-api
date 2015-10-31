@@ -100,7 +100,7 @@ class Ship:
         self.ship_class = ship_class
         self.coordinates = coordinates
         self.size = size
-        self.shots = shots 
+        self.shots = shots
 
     def intersects(self, coordinates):
         if self.coordinates.x == coordinates.x:
@@ -141,11 +141,16 @@ class Battlefield:
         return True
 
     def fire(self, coordinates):
+        if self.alredy_shoot(coordinates):
+            raise DoubledShotError()
         self.shots.append(coordinates)
         for ship in self.ships:
             if ship.intersects(coordinates):
                 return ship.fire()
         return FireResult.miss
+
+    def alredy_shoot(self, coordinates):
+        return coordinates in self.shots
 
 
 class Coordinates:
@@ -175,4 +180,8 @@ class InvalidNicknameError(Exception):
 
 
 class ShipNotInInventoryError(Exception):
+    pass
+
+
+class DoubledShotError(Exception):
     pass
