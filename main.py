@@ -18,7 +18,8 @@ def main():
     battle_repository = mongo.BattleRepository(
         db.battles, serializer.BattleSerializer()
     )
-    ship_class_repository = memory.ShipClassRepository()
+    ship_class_repository = memory.ShipClassRepository(
+        serializer.ShipClassSerializer())
     battlefield_repository = mongo.BattlefieldRepository(
         db.battlefields, serializer.BattlefieldSerializer()
     )
