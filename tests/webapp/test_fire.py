@@ -22,8 +22,8 @@ class TestFire(unittest.TestCase):
     def test_change_state_when_both_players_ready(self):
         body = {
             'ships': [
-                {'id': 'is:0', 'x': 3, 'y': 4},
-                {'id': 'is:1', 'x': 5, 'y': 7}
+                {'id': 'id:0', 'x': 3, 'y': 4},
+                {'id': 'id:1', 'x': 5, 'y': 7}
             ]
         }
         auth_token1 = self._do_auth_request()
@@ -52,7 +52,7 @@ class TestFire(unittest.TestCase):
         self.assertEqual(
             4, response_body['opponent_battlefield']['shots'][0]['y'])
         self.assertEqual(
-            'is:1', response_body['turn_account_id'])
+            'id:1', response_body['turn_account_id'])
 
     def _do_auth_request(self):
         response = self.app.post('/api/v1/account')

@@ -2,11 +2,13 @@ import unittest
 from shipbattles.service import AccountService, ValidationError
 from shipbattles.entity import Account
 from repository.memory import AccountRepository
+from repository import serializer
 
 
 class TestAccountService(unittest.TestCase):
     def setUp(self):
-        self.account_repository = AccountRepository()
+        self.account_repository = AccountRepository(
+            serializer.AccountSerializer())
         self.account_service = AccountService(self.account_repository)
 
     def test_create_account(self):

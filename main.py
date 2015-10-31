@@ -3,7 +3,7 @@ import webapp
 import eventdispatcher
 from shipbattles import service, event, listener
 from repository import mongo, memory
-from repository.mongo import serializer
+from repository import serializer
 
 
 def main():

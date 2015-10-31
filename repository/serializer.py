@@ -115,6 +115,23 @@ class ShipSerializer:
         )
 
 
+class ShipClassSerializer:
+    def serialize(self, ship_class):
+        return {
+            '_id': ship_class.id,
+            'name': ship_class.name,
+            'size': ship_class.size
+        }
+
+    def deserialize(self, data):
+        ship_class = entity.ShipClass(
+            data['name'],
+            data['size']
+        )
+        ship_class.id = data['_id']
+        return ship_class
+
+
 def serialize_list(collection, item_serialzer):
     return list(map(item_serialzer, collection))
 

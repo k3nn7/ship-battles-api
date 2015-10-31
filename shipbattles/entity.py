@@ -100,7 +100,7 @@ class Ship:
         self.ship_class = ship_class
         self.coordinates = coordinates
         self.size = size
-        self.shots = 0
+        self.shots = shots 
 
     def intersects(self, coordinates):
         if self.coordinates.x == coordinates.x:

@@ -47,7 +47,7 @@ class TestGetCurrentBattle(unittest.TestCase):
         self._validate_my_battlefield_in_response(response_body)
 
     def _validate_my_battlefield_in_response(self, response_body):
-        expected_inventory = {'is:0': 1, 'is:1': 1}
+        expected_inventory = {'id:0': 1, 'id:1': 1}
         self.assertIsNotNone(response_body['my_battlefield'])
         self.assertIsNotNone(response_body['my_battlefield']['id'])
         self.assertIsNotNone(response_body['my_battlefield']['ships'])

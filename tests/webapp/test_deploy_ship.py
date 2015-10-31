@@ -13,10 +13,10 @@ class TestDeployShip(unittest.TestCase):
         self._do_attack_request(auth_token)
         body = {
             'ships': [
-                {'id': 'is:1', 'x': 3, 'y': 4}
+                {'id': 'id:1', 'x': 3, 'y': 4}
             ]
         }
-        expected_inventory = {'is:1': 0, 'is:0': 1}
+        expected_inventory = {'id:1': 0, 'id:0': 1}
         response = self._deploy_request(auth_token, body)
         response_body = json.loads(response.get_data().decode('utf-8'))
         self.assertEqual(200, response.status_code)
@@ -30,11 +30,11 @@ class TestDeployShip(unittest.TestCase):
         self._do_attack_request(auth_token)
         body = {
             'ships': [
-                {'id': 'is:0', 'x': 3, 'y': 4},
-                {'id': 'is:1', 'x': 5, 'y': 7}
+                {'id': 'id:0', 'x': 3, 'y': 4},
+                {'id': 'id:1', 'x': 5, 'y': 7}
             ]
         }
-        expected_inventory = {'is:0': 0, 'is:1': 0}
+        expected_inventory = {'id:0': 0, 'id:1': 0}
         response = self._deploy_request(auth_token, body)
         response_body = json.loads(response.get_data().decode('utf-8'))
         self.assertEqual(200, response.status_code)
@@ -48,10 +48,10 @@ class TestDeployShip(unittest.TestCase):
         self._do_attack_request(auth_token)
         body = {
             'ships': [
-                {'id': 'is:3', 'x': 3, 'y': 4}
+                {'id': 'id:3', 'x': 3, 'y': 4}
             ]
         }
-        expected_inventory = {'is:1': 1, 'is:0': 1}
+        expected_inventory = {'id:1': 1, 'id:0': 1}
         response = self._deploy_request(auth_token, body)
         response_body = json.loads(response.get_data().decode('utf-8'))
         self.assertEqual(200, response.status_code)
@@ -65,13 +65,13 @@ class TestDeployShip(unittest.TestCase):
         self._do_attack_request(auth_token)
         body = {
             'ships': [
-                {'id': 'is:0', 'x': 3, 'y': 4},
-                {'id': 'is:1', 'x': 5, 'y': 7},
-                {'id': 'is:2', 'x': 5, 'y': 7},
-                {'id': 'is:3', 'x': 5, 'y': 7},
+                {'id': 'id:0', 'x': 3, 'y': 4},
+                {'id': 'id:1', 'x': 5, 'y': 7},
+                {'id': 'id:2', 'x': 5, 'y': 7},
+                {'id': 'id:3', 'x': 5, 'y': 7},
             ]
         }
-        expected_inventory = {'is:0': 0, 'is:1': 0}
+        expected_inventory = {'id:0': 0, 'id:1': 0}
         response = self._deploy_request(auth_token, body)
         response_body = json.loads(response.get_data().decode('utf-8'))
         self.assertEqual(200, response.status_code)

@@ -26,8 +26,8 @@ class TestReadyForBattle(unittest.TestCase):
         self._do_attack_request(auth_token)
         body = {
             'ships': [
-                {'id': 'is:0', 'x': 3, 'y': 4},
-                {'id': 'is:1', 'x': 5, 'y': 7}
+                {'id': 'id:0', 'x': 3, 'y': 4},
+                {'id': 'id:1', 'x': 5, 'y': 7}
             ]
         }
         self._deploy_request(auth_token, body)
@@ -43,8 +43,8 @@ class TestReadyForBattle(unittest.TestCase):
     def test_change_state_when_both_players_ready(self):
         body = {
             'ships': [
-                {'id': 'is:0', 'x': 3, 'y': 4},
-                {'id': 'is:1', 'x': 5, 'y': 7}
+                {'id': 'id:0', 'x': 3, 'y': 4},
+                {'id': 'id:1', 'x': 5, 'y': 7}
             ]
         }
         auth_token1 = self._do_auth_request()

@@ -2,14 +2,17 @@ import unittest
 from shipbattles.service import SecurityService, SecuredAccountError
 from shipbattles.service import AccountNotExistsError
 from shipbattles.service import InvalidCredentialsError
-from repository.memory import CrudRepository, SessionTokenRepository
+from repository.memory import AccountRepository, SessionTokenRepository
 from shipbattles.entity import Account
+from repository import serializer
 
 
 class TestSecurityService(unittest.TestCase):
     def setUp(self):
-        self.account_repository = CrudRepository()
-        self.session_token_repository = SessionTokenRepository()
+        self.account_repository = AccountRepository(
+            serializer.AccountSerializer())
+        self.session_token_repository = SessionTokenRepository(
+            serializer.SessionTokenSerializer())
         self.security_service = SecurityService(
             self.account_repository,
             self.session_token_repository

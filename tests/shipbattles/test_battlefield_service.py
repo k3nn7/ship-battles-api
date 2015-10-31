@@ -3,6 +3,7 @@ from shipbattles.service import BattlefieldService, NotAllShipsDeployedError
 from shipbattles.entity import ShipNotInInventoryError
 from shipbattles.entity import Battle, Coordinates, Ship, FireResult
 from repository.memory import BattlefieldRepository
+from repository import serializer
 
 
 class TestBattlefieldService(unittest.TestCase):
@@ -11,7 +12,8 @@ class TestBattlefieldService(unittest.TestCase):
             'id:1': 1,
             'id:2': 1
         }
-        self.battlefield_repository = BattlefieldRepository()
+        self.battlefield_repository = BattlefieldRepository(
+            serializer.BattlefieldSerializer())
         self.battlefield_service = BattlefieldService(
             self.battlefield_repository,
             battlefield_inventory
@@ -70,13 +72,16 @@ class TestBattlefieldService(unittest.TestCase):
 
         account_id = 'id:5'
         ship = Ship('id:1', Coordinates(3, 4), 1)
+
         returned = self.battlefield_service.deploy_ship_on_battlefield(
             battle, account_id, ship)
         battlefield = self.battlefield_service.get_my_battlefield(
             battle, account_id)
-        self.assertEqual(battlefield.__dict__, returned.__dict__)
+        self.assertEqual(battlefield.id, returned.id)
+
         self.assertTrue(len(battlefield.ships) == 1)
-        self.assertEqual(ship, battlefield.ships[0])
+        self.assertEqual(ship.coordinates, battlefield.ships[0].coordinates)
+        self.assertEqual(ship.ship_class, battlefield.ships[0].ship_class)
 
     def test_deploy_ship_that_is_not_in_inventory(self):
         battle = self._get_battle()
@@ -161,7 +166,6 @@ class TestBattlefieldService(unittest.TestCase):
             Coordinates(3, 5)
         )
         self.assertEqual(FireResult.sunken, result)
-
 
     def test_fire_adds_shot_to_battlefield(self):
         battle = self._get_battle()

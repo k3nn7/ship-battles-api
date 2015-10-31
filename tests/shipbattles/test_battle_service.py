@@ -7,12 +7,14 @@ from shipbattles.service import NotAllShipsDeployedError, InvalidPlayerError
 from shipbattles.entity import BattleState, Coordinates, Ship
 from repository.memory import BattleRepository, ShipClassRepository
 from shipbattles import event
-
+from repository import serializer
 
 class TestBattleService(unittest.TestCase):
     def setUp(self):
-        self.battle_repository = BattleRepository()
-        self.ship_class_repository = ShipClassRepository()
+        self.battle_repository = BattleRepository(
+            serializer.BattleSerializer())
+        self.ship_class_repository = ShipClassRepository(
+            serializer.ShipClassSerializer())
         self.event_dispatcher = Mock()
         self.battlefield_service = Mock()
         self.battle_service = BattleService(
@@ -70,7 +72,7 @@ class TestBattleService(unittest.TestCase):
     def test_deploy_valid_ship_class(self):
         battle = self._deploy_state_battle()
         account_id = 3
-        ship = Ship('is:1', Coordinates(3, 4), 1)
+        ship = Ship('id:1', Coordinates(3, 4), 1)
         self.battle_service.deploy_ship_for_battle(
             battle.id,
             account_id,
@@ -102,14 +104,14 @@ class TestBattleService(unittest.TestCase):
     def test_deploy_if_battle_in_invalid_state(self):
         account_id = 3
         battle = self.battle_service.attack(account_id)
-        ship = Ship('is:1', Coordinates(3, 4), 1)
+        ship = Ship('id:1', Coordinates(3, 4), 1)
         with self.assertRaises(InvalidBattleStateError):
             self.battle_service.deploy_ship_for_battle(
                 battle.id, account_id, ship)
 
     def test_deploy_if_invalid_account_id(self):
         battle = self._deploy_state_battle()
-        ship = Ship('is:1', Coordinates(3, 4), 1)
+        ship = Ship('id:1', Coordinates(3, 4), 1)
         with self.assertRaises(NotParticipantError):
             self.battle_service.deploy_ship_for_battle(
                 battle.id, 4, ship)
@@ -165,7 +167,6 @@ class TestBattleService(unittest.TestCase):
             return_value=self._ready_for_battle_battlefield())
 
         self.battle_service.ready_for_battle(account_id, battle.id)
-
 
         self.battle_service.fire(
             battle.id,
@@ -242,7 +243,7 @@ class TestBattleService(unittest.TestCase):
 
     def _deploy_state_battle(self):
         attacker_id = 3
-        self.battle_repository.save(self._looking_for_opponent_battle())
+        self._looking_for_opponent_battle()
         return self.battle_service.attack(attacker_id)
 
     def _not_ready_for_battle_battlefield(self):
