@@ -1,7 +1,7 @@
 import unittest
 from shipbattles.service import BattlefieldService, NotAllShipsDeployedError
 from shipbattles.entity import ShipNotInInventoryError
-from shipbattles.entity import Battle, Coordinates, Ship
+from shipbattles.entity import Battle, Coordinates, Ship, FireResult
 from repository.memory import BattlefieldRepository
 
 
@@ -69,7 +69,7 @@ class TestBattlefieldService(unittest.TestCase):
         self.battlefield_service.create_battlefields_for_battle(battle)
 
         account_id = 'id:5'
-        ship = Ship('id:1', Coordinates(3, 4))
+        ship = Ship('id:1', Coordinates(3, 4), 1)
         returned = self.battlefield_service.deploy_ship_on_battlefield(
             battle, account_id, ship)
         battlefield = self.battlefield_service.get_my_battlefield(
@@ -83,7 +83,7 @@ class TestBattlefieldService(unittest.TestCase):
         self.battlefield_service.create_battlefields_for_battle(battle)
 
         account_id = 'id:5'
-        ship = Ship('id:10', Coordinates(3, 4))
+        ship = Ship('id:10', Coordinates(3, 4), 2)
         with self.assertRaises(ShipNotInInventoryError):
             self.battlefield_service.deploy_ship_on_battlefield(
                 battle, account_id, ship)
@@ -93,7 +93,7 @@ class TestBattlefieldService(unittest.TestCase):
         self.battlefield_service.create_battlefields_for_battle(battle)
 
         account_id = 'id:5'
-        ship = Ship('id:1', Coordinates(3, 4))
+        ship = Ship('id:1', Coordinates(3, 4), 1)
         self.battlefield_service.deploy_ship_on_battlefield(
             battle, account_id, ship)
         with self.assertRaises(ShipNotInInventoryError):
@@ -113,7 +113,7 @@ class TestBattlefieldService(unittest.TestCase):
                         .create_battlefields_for_battle(battle))
         account_id = 'id:5'
         self.battlefield_service.deploy_ship_on_battlefield(
-            battle, account_id, Ship('id:2', Coordinates(3, 4)))
+            battle, account_id, Ship('id:2', Coordinates(3, 4), 2))
 
         with self.assertRaises(NotAllShipsDeployedError):
             self.battlefield_service.mark_ready(battlefields[0].id)
@@ -124,14 +124,44 @@ class TestBattlefieldService(unittest.TestCase):
                         .create_battlefields_for_battle(battle))
         account_id = 'id:5'
         self.battlefield_service.deploy_ship_on_battlefield(
-            battle, account_id, Ship('id:1', Coordinates(3, 4)))
+            battle, account_id, Ship('id:1', Coordinates(3, 4), 1))
         self.battlefield_service.deploy_ship_on_battlefield(
-            battle, account_id, Ship('id:2', Coordinates(3, 4)))
+            battle, account_id, Ship('id:2', Coordinates(3, 4), 2))
 
         self.battlefield_service.mark_ready(battlefields[0].id)
         battlefield = self.battlefield_service.get_my_battlefield(
             battle, account_id)
         self.assertTrue(battlefield.ready_for_battle)
+
+    def test_fire_returns_fire_result(self):
+        battle = self._get_battle()
+        (self.battlefield_service
+         .create_battlefields_for_battle(battle))
+        account_id = 'id:5'
+        self.battlefield_service.deploy_ship_on_battlefield(
+            battle, account_id, Ship('id:1', Coordinates(3, 4), 2))
+
+        result = self.battlefield_service.fire(
+            battle.id,
+            account_id,
+            Coordinates(1, 1)
+        )
+        self.assertEqual(FireResult.miss, result)
+
+        result = self.battlefield_service.fire(
+            battle.id,
+            account_id,
+            Coordinates(3, 4)
+        )
+        self.assertEqual(FireResult.hit, result)
+
+        result = self.battlefield_service.fire(
+            battle.id,
+            account_id,
+            Coordinates(3, 5)
+        )
+        self.assertEqual(FireResult.sunken, result)
+
 
     def test_fire_adds_shot_to_battlefield(self):
         battle = self._get_battle()

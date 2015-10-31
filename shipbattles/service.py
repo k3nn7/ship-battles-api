@@ -1,5 +1,5 @@
 from shipbattles.entity import Account, SessionToken, Battle, BattleState
-from shipbattles.entity import Battlefield
+from shipbattles.entity import Battlefield, FireResult
 from shipbattles.entity import InvalidPasswordError, InvalidNicknameError
 from shipbattles import event
 import time
@@ -203,8 +203,9 @@ class BattlefieldService:
     def fire(self, battle_id, account_id, coordinates):
         battlefield = (self.battlefield_repository
                        .find_by_battle_and_account(battle_id, account_id))
-        battlefield.fire(coordinates)
+        fire_result = battlefield.fire(coordinates)
         self.battlefield_repository.save(battlefield)
+        return fire_result
 
 
 class SecuredAccountError(Exception):

@@ -132,10 +132,13 @@ def deploy_ship():
 
     for ship_data in request_body['ships']:
         try:
+            ship_class = app.ship_class_repository.find_by_id(ship_data['id'])
             ship = entity.Ship(ship_data['id'], entity.Coordinates(
-                ship_data['x'], ship_data['y']))
+                ship_data['x'], ship_data['y']), ship_class.size)
             app.battle_service.deploy_ship_for_battle(
                 current_battle.id, session.account_id, ship)
+        except service.EntityNotFoundError:
+            pass
         except service.InvalidShipClassError:
             pass
 

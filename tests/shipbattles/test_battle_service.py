@@ -70,7 +70,7 @@ class TestBattleService(unittest.TestCase):
     def test_deploy_valid_ship_class(self):
         battle = self._deploy_state_battle()
         account_id = 3
-        ship = Ship('is:1', Coordinates(3, 4))
+        ship = Ship('is:1', Coordinates(3, 4), 1)
         self.battle_service.deploy_ship_for_battle(
             battle.id,
             account_id,
@@ -94,7 +94,7 @@ class TestBattleService(unittest.TestCase):
     def test_deploy_invalid_ship_class(self):
         battle = self._deploy_state_battle()
         account_id = 3
-        ship = Ship('foo', Coordinates(3, 4))
+        ship = Ship('foo', Coordinates(3, 4), 1)
         with self.assertRaises(InvalidShipClassError):
             self.battle_service.deploy_ship_for_battle(
                 battle.id, account_id, ship)
@@ -102,14 +102,14 @@ class TestBattleService(unittest.TestCase):
     def test_deploy_if_battle_in_invalid_state(self):
         account_id = 3
         battle = self.battle_service.attack(account_id)
-        ship = Ship('is:1', Coordinates(3, 4))
+        ship = Ship('is:1', Coordinates(3, 4), 1)
         with self.assertRaises(InvalidBattleStateError):
             self.battle_service.deploy_ship_for_battle(
                 battle.id, account_id, ship)
 
     def test_deploy_if_invalid_account_id(self):
         battle = self._deploy_state_battle()
-        ship = Ship('is:1', Coordinates(3, 4))
+        ship = Ship('is:1', Coordinates(3, 4), 1)
         with self.assertRaises(NotParticipantError):
             self.battle_service.deploy_ship_for_battle(
                 battle.id, 4, ship)

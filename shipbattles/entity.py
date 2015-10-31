@@ -96,9 +96,24 @@ class ShipClass:
 
 
 class Ship:
-    def __init__(self, ship_class, coordinates):
+    def __init__(self, ship_class, coordinates, size, shots=0):
         self.ship_class = ship_class
         self.coordinates = coordinates
+        self.size = size
+        self.shots = 0
+
+    def intersects(self, coordinates):
+        if self.coordinates.x == coordinates.x:
+            if (coordinates.y >= self.coordinates.y
+               and coordinates.y <= (self.coordinates.y + 1)):
+                return True
+        return False
+
+    def fire(self):
+        self.shots += 1
+        if self.shots >= self.size:
+            return FireResult.sunken
+        return FireResult.hit
 
 
 class Battlefield:
@@ -127,6 +142,10 @@ class Battlefield:
 
     def fire(self, coordinates):
         self.shots.append(coordinates)
+        for ship in self.ships:
+            if ship.intersects(coordinates):
+                return ship.fire()
+        return FireResult.miss
 
 
 class Coordinates:
@@ -139,6 +158,12 @@ class Coordinates:
             return False
         return ((self.x == other.x)
                 and (self.y == other.y))
+
+
+class FireResult(Enum):
+    miss = 1
+    hit = 2
+    sunken = 3
 
 
 class InvalidPasswordError(Exception):

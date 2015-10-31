@@ -24,6 +24,9 @@ def main():
     )
 
     webapp.app.debug = True
+
+    webapp.app.ship_class_repository = ship_class_repository
+
     webapp.app.account_service = service.AccountService(
         account_repository
     )
