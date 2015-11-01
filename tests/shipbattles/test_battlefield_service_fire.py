@@ -26,7 +26,7 @@ class TestBattlefieldService(unittest.TestCase):
         account_id = 'id:5'
         self.battlefield_service.deploy_ship_on_battlefield(
             battle, account_id,
-            Ship('id:1', Coordinates(3, 4), 2, Orientation.horizontal))
+            Ship('id:1', Coordinates(3, 4), 2, Orientation.vertical))
 
         result = self.battlefield_service.fire(
             battle.id,

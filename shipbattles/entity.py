@@ -104,9 +104,16 @@ class Ship:
         self.shots = shots
 
     def intersects(self, coordinates):
-        if self.coordinates.x == coordinates.x:
+        if (self.orientation == Orientation.vertical
+           and self.coordinates.x == coordinates.x):
             if (coordinates.y >= self.coordinates.y
-               and coordinates.y <= (self.coordinates.y + 1)):
+               and coordinates.y <= (self.coordinates.y + self.size - 1)):
+                return True
+
+        if (self.orientation == Orientation.horizontal
+           and self.coordinates.y == coordinates.y):
+            if (coordinates.x >= self.coordinates.x
+               and coordinates.x <= (self.coordinates.x + self.size - 1)):
                 return True
         return False
 
