@@ -37,7 +37,7 @@ def main():
     )
     webapp.app.battlefield_service = service.BattlefieldService(
         battlefield_repository,
-        {'is:0': 1, 'is:1': 1}
+        {'id:0': 1, 'id:1': 1}
     )
     webapp.app.battle_service = service.BattleService(
         battle_repository,
