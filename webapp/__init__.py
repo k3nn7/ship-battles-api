@@ -134,7 +134,8 @@ def deploy_ship():
         try:
             ship_class = app.ship_class_repository.find_by_id(ship_data['id'])
             ship = entity.Ship(ship_data['id'], entity.Coordinates(
-                ship_data['x'], ship_data['y']), ship_class.size)
+                ship_data['x'], ship_data['y']), ship_class.size,
+                entity.Orientation(ship_data['orientation']))
             app.battle_service.deploy_ship_for_battle(
                 current_battle.id, session.account_id, ship)
         except service.EntityNotFoundError:

@@ -1,7 +1,7 @@
 import unittest
 from shipbattles.service import BattlefieldService
 from shipbattles.entity import Battle, Coordinates, Ship, FireResult
-from shipbattles.entity import DoubledShotError
+from shipbattles.entity import DoubledShotError, Orientation
 from repository.memory import BattlefieldRepository
 from repository import serializer
 
@@ -25,7 +25,8 @@ class TestBattlefieldService(unittest.TestCase):
          .create_battlefields_for_battle(battle))
         account_id = 'id:5'
         self.battlefield_service.deploy_ship_on_battlefield(
-            battle, account_id, Ship('id:1', Coordinates(3, 4), 2))
+            battle, account_id,
+            Ship('id:1', Coordinates(3, 4), 2, Orientation.horizontal))
 
         result = self.battlefield_service.fire(
             battle.id,

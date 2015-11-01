@@ -44,7 +44,8 @@ def ship_serialize(ship):
     return {
         'id': str(ship.ship_class),
         'x': ship.coordinates.x,
-        'y': ship.coordinates.y
+        'y': ship.coordinates.y,
+        'orientation': ship.orientation.value
     }
 
 

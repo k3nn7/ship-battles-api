@@ -96,10 +96,11 @@ class ShipClass:
 
 
 class Ship:
-    def __init__(self, ship_class, coordinates, size, shots=0):
+    def __init__(self, ship_class, coordinates, size, orientation, shots=0):
         self.ship_class = ship_class
         self.coordinates = coordinates
         self.size = size
+        self.orientation = orientation
         self.shots = shots
 
     def intersects(self, coordinates):
@@ -163,6 +164,11 @@ class Coordinates:
             return False
         return ((self.x == other.x)
                 and (self.y == other.y))
+
+
+class Orientation(Enum):
+    vertical = 1
+    horizontal = 2
 
 
 class FireResult(Enum):

@@ -22,8 +22,8 @@ class TestFire(unittest.TestCase):
     def test_fire_when_in_fire_exchange(self):
         body = {
             'ships': [
-                {'id': 'id:0', 'x': 3, 'y': 4},
-                {'id': 'id:1', 'x': 5, 'y': 7}
+                {'id': 'id:0', 'x': 3, 'y': 4, 'orientation': 1},
+                {'id': 'id:1', 'x': 5, 'y': 7, 'orientation': 2}
             ]
         }
         auth_token1 = self._do_auth_request()

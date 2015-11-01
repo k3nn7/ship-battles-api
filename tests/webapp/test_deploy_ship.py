@@ -13,7 +13,7 @@ class TestDeployShip(unittest.TestCase):
         self._do_attack_request(auth_token)
         body = {
             'ships': [
-                {'id': 'id:1', 'x': 3, 'y': 4}
+                {'id': 'id:1', 'x': 3, 'y': 4, 'orientation': 1}
             ]
         }
         expected_inventory = {'id:1': 0, 'id:0': 1}
@@ -30,8 +30,8 @@ class TestDeployShip(unittest.TestCase):
         self._do_attack_request(auth_token)
         body = {
             'ships': [
-                {'id': 'id:0', 'x': 3, 'y': 4},
-                {'id': 'id:1', 'x': 5, 'y': 7}
+                {'id': 'id:0', 'x': 3, 'y': 4, 'orientation': 1},
+                {'id': 'id:1', 'x': 5, 'y': 7, 'orientation': 2}
             ]
         }
         expected_inventory = {'id:0': 0, 'id:1': 0}
@@ -48,7 +48,7 @@ class TestDeployShip(unittest.TestCase):
         self._do_attack_request(auth_token)
         body = {
             'ships': [
-                {'id': 'id:3', 'x': 3, 'y': 4}
+                {'id': 'id:3', 'x': 3, 'y': 4, 'orientation': 1}
             ]
         }
         expected_inventory = {'id:1': 1, 'id:0': 1}
@@ -65,10 +65,10 @@ class TestDeployShip(unittest.TestCase):
         self._do_attack_request(auth_token)
         body = {
             'ships': [
-                {'id': 'id:0', 'x': 3, 'y': 4},
-                {'id': 'id:1', 'x': 5, 'y': 7},
-                {'id': 'id:2', 'x': 5, 'y': 7},
-                {'id': 'id:3', 'x': 5, 'y': 7},
+                {'id': 'id:0', 'x': 3, 'y': 4, 'orientation': 1},
+                {'id': 'id:1', 'x': 5, 'y': 7, 'orientation': 2},
+                {'id': 'id:2', 'x': 5, 'y': 7, 'orientation': 1},
+                {'id': 'id:3', 'x': 5, 'y': 7, 'orientation': 2},
             ]
         }
         expected_inventory = {'id:0': 0, 'id:1': 0}

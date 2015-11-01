@@ -5,9 +5,11 @@ from shipbattles.service import AlreadyInBattleError, InvalidShipClassError
 from shipbattles.service import InvalidBattleStateError, NotParticipantError
 from shipbattles.service import NotAllShipsDeployedError, InvalidPlayerError
 from shipbattles.entity import BattleState, Coordinates, Ship
+from shipbattles.entity import Orientation
 from repository.memory import BattleRepository, ShipClassRepository
 from shipbattles import event
 from repository import serializer
+
 
 class TestBattleService(unittest.TestCase):
     def setUp(self):
@@ -72,7 +74,7 @@ class TestBattleService(unittest.TestCase):
     def test_deploy_valid_ship_class(self):
         battle = self._deploy_state_battle()
         account_id = 3
-        ship = Ship('id:1', Coordinates(3, 4), 1)
+        ship = Ship('id:1', Coordinates(3, 4), 1, Orientation.horizontal)
         self.battle_service.deploy_ship_for_battle(
             battle.id,
             account_id,
@@ -96,7 +98,7 @@ class TestBattleService(unittest.TestCase):
     def test_deploy_invalid_ship_class(self):
         battle = self._deploy_state_battle()
         account_id = 3
-        ship = Ship('foo', Coordinates(3, 4), 1)
+        ship = Ship('foo', Coordinates(3, 4), 1, Orientation.vertical)
         with self.assertRaises(InvalidShipClassError):
             self.battle_service.deploy_ship_for_battle(
                 battle.id, account_id, ship)
@@ -104,14 +106,14 @@ class TestBattleService(unittest.TestCase):
     def test_deploy_if_battle_in_invalid_state(self):
         account_id = 3
         battle = self.battle_service.attack(account_id)
-        ship = Ship('id:1', Coordinates(3, 4), 1)
+        ship = Ship('id:1', Coordinates(3, 4), 3, Orientation.vertical)
         with self.assertRaises(InvalidBattleStateError):
             self.battle_service.deploy_ship_for_battle(
                 battle.id, account_id, ship)
 
     def test_deploy_if_invalid_account_id(self):
         battle = self._deploy_state_battle()
-        ship = Ship('id:1', Coordinates(3, 4), 1)
+        ship = Ship('id:1', Coordinates(3, 4), 1, Orientation.horizontal)
         with self.assertRaises(NotParticipantError):
             self.battle_service.deploy_ship_for_battle(
                 battle.id, 4, ship)

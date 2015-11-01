@@ -102,6 +102,7 @@ class ShipSerializer:
             'class': ship.ship_class,
             'coordinates': coordinates_serializer.serialize(ship.coordinates),
             'size': ship.size,
+            'orientation': ship.orientation.value,
             'shots': ship.shots
         }
 
@@ -111,6 +112,7 @@ class ShipSerializer:
             data['class'],
             coordinates_serializer.deserialize(data['coordinates']),
             data['size'],
+            entity.Orientation(data['orientation']),
             data['shots']
         )
 
