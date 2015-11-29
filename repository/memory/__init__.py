@@ -101,3 +101,12 @@ class BattlefieldRepository(CrudRepository):
             if (b['battle_id'] == battle_id and b['account_id'] == account_id):
                 return self.serializer_class.deserialize(b)
         raise EntityNotFoundError()
+
+
+class ShipRepository(CrudRepository):
+    def find_by_battlefield_id(self, battlefield_id):
+        result = []
+        for s in self.data.values():
+            if (s['battlefield_id'] == battlefield_id):
+                result.append(self.serializer_class.deserialize(s))
+        return result

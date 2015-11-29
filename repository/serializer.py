@@ -99,22 +99,27 @@ class ShipSerializer:
     def serialize(self, ship):
         coordinates_serializer = CoordinatesSerializer()
         return {
+            '_id': ship.id,
             'class': ship.ship_class,
             'coordinates': coordinates_serializer.serialize(ship.coordinates),
             'size': ship.size,
             'orientation': ship.orientation.value,
-            'shots': ship.shots
+            'shots': ship.shots,
+            'battlefield_id': ship.battlefield_id
         }
 
     def deserialize(self, data):
         coordinates_serializer = CoordinatesSerializer()
-        return entity.Ship(
+        ship = entity.Ship(
             data['class'],
             coordinates_serializer.deserialize(data['coordinates']),
             data['size'],
             entity.Orientation(data['orientation']),
             data['shots']
         )
+        ship.id = data['_id']
+        ship.battlefield_id = data['battlefield_id']
+        return ship
 
 
 class ShipClassSerializer:

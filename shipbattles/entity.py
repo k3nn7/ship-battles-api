@@ -97,11 +97,13 @@ class ShipClass:
 
 class Ship:
     def __init__(self, ship_class, coordinates, size, orientation, shots=0):
+        self.id = None
         self.ship_class = ship_class
         self.coordinates = coordinates
         self.size = size
         self.orientation = orientation
         self.shots = shots
+        self.battlefield_id = None
 
     def intersects(self, coordinates):
         if (self.orientation == Orientation.vertical

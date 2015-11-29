@@ -1,6 +1,7 @@
 from shipbattles.entity import Account, SessionToken, Battle, BattleState
-from shipbattles.entity import Battlefield, FireResult
+from shipbattles.entity import Battlefield, FireResult, Ship, Coordinates
 from shipbattles.entity import InvalidPasswordError, InvalidNicknameError
+from shipbattles.entity import Orientation
 from shipbattles import event
 import time
 from copy import copy
@@ -207,6 +208,22 @@ class BattlefieldService:
         fire_result = battlefield.fire(coordinates)
         self.battlefield_repository.save(battlefield)
         return fire_result
+
+
+class ShipService:
+    def __init__(self, ship_repository, ship_class_repository):
+        self.ship_repository = ship_repository
+        self.ship_class_repository = ship_class_repository
+
+    def create_inventory(self, battlefield_id, inventory_configuration):
+        for ship_class_id, count in inventory_configuration.items():
+            ship_class = self.ship_class_repository.find_by_id(ship_class_id)
+            ship = Ship(ship_class_id, Coordinates(0, 0), ship_class.size,
+                        Orientation.vertical)
+            ship.battlefield_id = battlefield_id
+            for i in range(0, count):
+                self.ship_repository.save(ship)
+
 
 
 class SecuredAccountError(Exception):
