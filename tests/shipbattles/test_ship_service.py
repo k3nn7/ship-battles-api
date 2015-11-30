@@ -20,6 +20,11 @@ class TestShipService(unittest.TestCase):
         self.ship_service.create_inventory(
             battlefield_id, inventory_configuration)
 
+        inventory = self.ship_repository.find_by_battlefield_id(battlefield_id)
+        self._assert_valid_inventory(inventory)
+        self.assertTrue(self._items_have_unique_ids(inventory))
+
+    def _assert_valid_inventory(self, inventory):
         expected_inventory = [
             {'id': 'id:2', 'ship_class_id': 'id:0'},
             {'id': 'id:3', 'ship_class_id': 'id:1'},
@@ -27,16 +32,25 @@ class TestShipService(unittest.TestCase):
             {'id': 'id:1', 'ship_class_id': 'id:0'},
         ]
 
-        inventory = self.ship_repository.find_by_battlefield_id(battlefield_id)
         self.assertEqual(4, len(inventory))
-
         for expected in expected_inventory:
-            self.assertTrue(self._assert_contains_ship(expected, inventory))
+            self.assertTrue(self._contains_ship(
+                inventory=inventory,
+                ship_class_id=expected['ship_class_id'],
+                deployed=False
+                ))
 
-    def _assert_contains_ship(self, ship_params, inventory):
+    def _contains_ship(self, inventory, ship_class_id, deployed):
         for ship in inventory:
-            id_ok = ship.id == ship_params['id']
-            class_ok = ship.ship_class == ship_params['ship_class_id']
-            if id_ok and class_ok:
+            class_ok = ship.ship_class == ship_class_id
+            if class_ok:
                 return True
         return False
+
+    def _items_have_unique_ids(self, inventory):
+        ids = []
+        for item in inventory:
+            if item.id in ids:
+                return False
+            ids.append(item.id)
+        return True

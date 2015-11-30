@@ -225,7 +225,6 @@ class ShipService:
                 self.ship_repository.save(ship)
 
 
-
 class SecuredAccountError(Exception):
     pass
 
