@@ -43,7 +43,8 @@ class TestShipService(unittest.TestCase):
     def _contains_ship(self, inventory, ship_class_id, deployed):
         for ship in inventory:
             class_ok = ship.ship_class == ship_class_id
-            if class_ok:
+            deployed_ok = ship.deployed == deployed
+            if class_ok and deployed_ok:
                 return True
         return False
 

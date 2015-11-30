@@ -104,6 +104,7 @@ class Ship:
         self.orientation = orientation
         self.shots = shots
         self.battlefield_id = None
+        self.deployed = False
 
     def intersects(self, coordinates):
         if (self.orientation == Orientation.vertical
