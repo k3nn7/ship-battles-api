@@ -205,6 +205,20 @@ def ship_classes_get():
     )
 
 
+@app.route('/api/v1/battle/my-battlefield/inventory')
+def inventory_get():
+    session = authenticate_by_hash(request)
+    current_battle = app.battle_service.get_current_battle(session.account_id)
+    my_battlefield = app.battlefield_service.get_my_battlefield(
+        current_battle, session.account_id)
+    inventory = app.ship_repository.find_by_battlefield_id(
+        my_battlefield.id)
+    return Response(
+        j(collection(inventory, serializer.ship_serialize)),
+        status=200
+        )
+
+
 class ApiError(Exception):
     status_code = 500
 

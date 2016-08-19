@@ -20,6 +20,10 @@ def build():
         serializer.ShipClassSerializer())
     battlefield_repository = memory.BattlefieldRepository(
         serializer.BattlefieldSerializer())
+    ship_repository = memory.ShipRepository(
+        serializer.ShipSerializer())
+
+    webapp.app.ship_repository = ship_repository
 
     webapp.app.account_service = service.AccountService(
         account_repository
